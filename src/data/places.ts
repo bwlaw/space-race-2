@@ -77,7 +77,7 @@ export const STATIONS: Record<'ISS' | 'Tiangong', InfoCard> = {
     codes: ['CAN'],
     kind: 'Space station, about 400 km up',
     inUse: 'In orbit since 1998, crewed since 2000',
-    note: 'Built by the USA, Russia, Europe, Japan and Canada. It circles Earth about 16 times a day and has had people on board without a break since November 2000.',
+    note: 'Built by the USA, Russia, Europe, Japan and Canada. It circles Earth about 16 times a day and has been crewed nonstop since November 2000.',
   },
   Tiangong: {
     name: 'Tiangong',
