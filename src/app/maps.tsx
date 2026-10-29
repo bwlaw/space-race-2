@@ -107,8 +107,8 @@ export default function MapsScreen() {
   const [body, setBody] = useState<Body>('Earth');
   const [orbit, setOrbit] = useState<Orbit>('Both');
   const [sel, setSel] = useState<string | null>(null);
-  const [openList, setOpenList] = useState(false);
-  const [openOrbiters, setOpenOrbiters] = useState(false);
+  const [openList, setOpenList] = useState(true);
+  const [openOrbiters, setOpenOrbiters] = useState(true);
   const now = useNow(2000);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
   const tgTle = useRemote('tle-tiangong', TLE_URLS.Tiangong, 6 * HOUR, parseTle, true);
