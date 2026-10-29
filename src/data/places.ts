@@ -102,7 +102,7 @@ export const BODY_INFO: Record<'Moon' | 'Mars', InfoCard> = {
     countries: ['USA', 'China'],
     kind: '',
     inUse: 'Rovers have driven on Mars since 1997',
-    note: 'Only the USA and China have landed working rovers on Mars. Orbiters from the USA, the Soviet Union, Europe, India, China and the United Arab Emirates have circled it. A day there lasts about 24 hours and 40 minutes.',
+    note: 'Only the USA and China have landed working rovers on Mars. Orbiters from the USA, the Soviet Union, Europe, India, China and the United Arab Emirates have circled it.',
   },
 };
 
