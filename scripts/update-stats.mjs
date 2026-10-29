@@ -13,7 +13,7 @@ function countryFromCode(code) {
   if (!code) return null;
   if (code === 'USA') return 'USA';
   if (code === 'CHN') return 'China';
-  if (code === 'RUS' || code === 'KAZ') return 'Russia';
+  if (code === 'RUS' || code === 'KAZ' || code === 'SUN') return 'Russia';
   if (code === 'IND') return 'India';
   if (code === 'JPN') return 'Japan';
   if (EUROPE.has(code)) return 'Europe';
@@ -63,16 +63,27 @@ async function main() {
   const allTime = {};
   for (const c of COUNTRIES) {
     if (ids[c].length === 0) {
-      allTime[c] = { launches: 0, successRate: null };
+      allTime[c] = { launches: 0, successRate: null, crewed: 0 };
       continue;
     }
     const loc = ids[c].join(',');
     const attempts = (await get(`${BASE}/launches/previous/?mode=list&limit=1&location__ids=${loc}&status__ids=3,4,7`)).count;
     const successes = (await get(`${BASE}/launches/previous/?mode=list&limit=1&location__ids=${loc}&status__ids=3`)).count;
-    allTime[c] = { launches: attempts, successRate: rate(successes, attempts) };
+    const crewed = (await get(`${BASE}/launches/previous/?mode=list&limit=1&location__ids=${loc}&status__ids=3,4,7&is_crewed=true&include_suborbital=false`)).count;
+    allTime[c] = { launches: attempts, successRate: rate(successes, attempts), crewed };
   }
   const worldAttempts = (await get(`${BASE}/launches/previous/?mode=list&limit=1&status__ids=3,4,7`)).count;
   const worldSuccesses = (await get(`${BASE}/launches/previous/?mode=list&limit=1&status__ids=3`)).count;
+  const worldCrewed = (await get(`${BASE}/launches/previous/?mode=list&limit=1&status__ids=3,4,7&is_crewed=true&include_suborbital=false`)).count;
+
+  // Everyone who has flown to space, counted by nationality.
+  const people = await all(`${BASE}/astronauts/?mode=list&limit=100&has_flown=true&is_human=true`);
+  const astronauts = Object.fromEntries(COUNTRIES.map((c) => [c, 0]));
+  for (const p of people) {
+    const c = countryFromCode(p.nationality?.[0]?.alpha_3_code);
+    if (c) astronauts[c] += 1;
+  }
+  for (const c of COUNTRIES) allTime[c].astronauts = astronauts[c];
 
   // 3. Every launch since 1 January four years ago, for the 5-year and 12-month views.
   const now = new Date();
@@ -109,7 +120,7 @@ async function main() {
     source: 'Launch Library 2 by The Space Devs',
     fiveYearStart: fiveStart.toISOString().slice(0, 10),
     periods: { allTime, last5: finish('last5'), last12: finish('last12') },
-    world: { launches: worldAttempts, successRate: rate(worldSuccesses, worldAttempts) },
+    world: { launches: worldAttempts, successRate: rate(worldSuccesses, worldAttempts), crewed: worldCrewed, astronauts: people.length },
   };
   await mkdir('data', { recursive: true });
   await writeFile('data/stats.json', `${JSON.stringify(stats, null, 2)}\n`);

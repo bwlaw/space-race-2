@@ -5,11 +5,11 @@ import type { Period } from '@/lib/race';
 /** Daily statistics built by the GitHub Actions job (scripts/update-stats.mjs). */
 export const STATS_URL = 'https://raw.githubusercontent.com/bwlaw/space-race-2/main/data/stats.json';
 
-export type CountryStat = { launches: number; successRate: number | null; rocket?: string | null };
+export type CountryStat = { launches: number; successRate: number | null; rocket?: string | null; crewed?: number; astronauts?: number };
 export type Stats = {
   updated: string;
   periods: Record<Period, Record<Country, CountryStat>>;
-  world: { launches: number; successRate: number | null };
+  world: { launches: number; successRate: number | null; crewed?: number; astronauts?: number };
 };
 
 export function parseStats(raw: unknown): Stats {

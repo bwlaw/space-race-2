@@ -53,7 +53,9 @@ export default function HistoryScreen() {
   const live = useRemote('stats-v1', STATS_URL, 6 * HOUR, parseStats).data;
   const sample = COUNTRY_STATS[who ?? 'World'];
   const liveLaunch = live ? (who ? live.periods.allTime[who] : live.world) : null;
-  const stats: [number, number, number, number, number] = [liveLaunch?.launches ?? sample[0], liveLaunch?.successRate ?? sample[1], sample[2], sample[3], sample[4]];
+  const stats: [number, number, number, number, number] = [liveLaunch?.launches ?? sample[0], liveLaunch?.successRate ?? sample[1], liveLaunch?.crewed ?? sample[2], liveLaunch?.astronauts ?? sample[3], sample[4]];
+  const crewedLive = typeof liveLaunch?.crewed === 'number';
+  const peopleLive = typeof liveLaunch?.astronauts === 'number';
 
   const { points, events } = useMemo(() => {
     const pts = Object.fromEntries(COUNTRIES.map((c) => [c, 0])) as Record<Country, number>;
@@ -121,12 +123,12 @@ export default function HistoryScreen() {
         <View style={styles.tile}>
           <Text style={styles.small}>Crewed flights</Text>
           <Text style={styles.big}>{stats[2]}</Text>
-          <Text style={styles.small}>sample figure</Text>
+          <Text style={styles.small}>{crewedLive ? 'on own rockets' : 'sample figure'}</Text>
         </View>
         <View style={styles.tile}>
           <Text style={styles.small}>Astronauts in total</Text>
           <Text style={styles.big}>{stats[3]}</Text>
-          <Text style={styles.small}>sample figure</Text>
+          <Text style={styles.small}>{peopleLive ? 'flown to space' : 'sample figure'}</Text>
         </View>
       </View>
 

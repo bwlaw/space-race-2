@@ -53,6 +53,7 @@ export default function LaunchesScreen() {
   const [picked, setPicked] = useState<string | null>(null);
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
   const [openList, setOpenList] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   // Launches stay listed until they have lifted off.
   const upcoming = useMemo(() => (data ?? []).filter((l) => l.net > now - 60000).sort((a, b) => a.net - b.net), [data, now]);
@@ -127,7 +128,7 @@ export default function LaunchesScreen() {
       <CountryFilter value={filter} onChange={pickFilter} />
 
       <Section title={filter ? `Upcoming from ${filter}` : 'Upcoming launches'} count={list.length} open={openList} onToggle={() => setOpenList(!openList)}>
-        {list.map((l) => {
+        {(showAll ? list : list.slice(0, 10)).map((l) => {
           const onTop = top?.id === l.id;
           return (
             <Pressable
@@ -155,6 +156,11 @@ export default function LaunchesScreen() {
             </Pressable>
           );
         })}
+        {list.length > 10 && (
+          <Pressable onPress={() => setShowAll(!showAll)} accessibilityRole="button" accessibilityState={{ expanded: showAll }} style={styles.moreBtn}>
+            <Text style={styles.moreText}>{showAll ? 'Show fewer' : 'Show more launches'}</Text>
+          </Pressable>
+        )}
         {list.length === 0 && state !== 'loading' && <Text style={styles.small}>No upcoming launches for this country.</Text>}
       </Section>
       <Text style={styles.credit}>Launch data: Launch Library 2 by The Space Devs</Text>
@@ -182,6 +188,8 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 15, fontWeight: '600', color: C.text },
   small: { fontSize: 13, color: C.muted },
   credit: { fontSize: 11, color: C.dim },
+  moreBtn: { height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
+  moreText: { fontSize: 14, fontWeight: '600', color: C.text },
   streamLink: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2, alignSelf: 'flex-start' },
   streamText: { fontSize: 13, fontWeight: '600', color: C.sky },
   status: { fontSize: 12, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
