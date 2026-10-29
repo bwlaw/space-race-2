@@ -1,13 +1,13 @@
 import { Image } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
-import { BODY_INFO, BODY_STATS, PLACES, STATIONS, type Body } from '@/data/places';
+import { BODY_INFO, BODY_STATS, MARS_ORBITERS, PLACES, STATIONS, type Body } from '@/data/places';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
 import { HOUR, useRemote } from '@/lib/remote';
 import { fixAt, groundTrack, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
@@ -57,19 +57,29 @@ export default function MapsScreen() {
   const isEarth = body === 'Earth';
   const isMars = body === 'Mars';
   const accent = isMars ? C.sky : C.orange;
+  const cardAccent = body === 'Moon' ? C.sky : accent;
+  const orbiters = useMemo(() => (isMars ? [...MARS_ORBITERS].sort((a, b) => b.year - a.year) : []), [isMars]);
+  const orbiter = orbiters.find((o) => o.key === sel) ?? null;
+  // One lap of the ring every 3 minutes, each orbiter at its own place on it.
+  const ringPos = (deg: number) => {
+    const a = ((deg + (now / 180000) * 360) * Math.PI) / 180;
+    return [175 + 172 * Math.cos(a), 120 + 115 * Math.sin(a)] as const;
+  };
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
   const showIss = isEarth && orbit !== 'Tiangong';
   const showTg = isEarth && orbit !== 'ISS';
   const stationSel = (sel === 'ISS' && showIss) || (sel === 'Tiangong' && showTg) ? (sel as 'ISS' | 'Tiangong') : null;
   const place = places.find((p) => p.name === sel) ?? null;
-  const curKey = stationSel ?? place?.name ?? null;
+  const curKey = stationSel ?? orbiter?.key ?? place?.name ?? null;
   const info = stationSel
     ? { ...STATIONS[stationSel], color: ORBITS[stationSel].color }
     : place
-      ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: accent }
+      ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
+      : orbiter
+        ? { ...orbiter, color: C.sky }
       : isEarth
         ? { ...STATIONS.ISS, color: ORBITS.ISS.color }
-        : { ...BODY_INFO[body as 'Moon' | 'Mars'], color: accent };
+        : { ...BODY_INFO[body as 'Moon' | 'Mars'], color: cardAccent };
   const iss = issFix ? project(issFix.lon, issFix.lat) : stationAt(t - 180, ORBITS.ISS.inclination, ORBITS.ISS.offset);
   const tg = tgFix ? project(tgFix.lon, tgFix.lat) : stationAt(((t + 150) % 360) - 180, ORBITS.Tiangong.inclination, ORBITS.Tiangong.offset);
   const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -111,6 +121,17 @@ export default function MapsScreen() {
       <View style={styles.map}>
         <Image source={MAP_IMAGES[body]} style={styles.fill} contentFit="contain" accessibilityLabel={`Map of ${body}`} />
         <Svg width="100%" height="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={StyleSheet.absoluteFill} pointerEvents="none">
+          {isMars && <Ellipse cx={175} cy={120} rx={172} ry={115} fill="none" stroke={C.sky} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 5" />}
+          {orbiters.map((o) => {
+            const [x, y] = ringPos(o.angle);
+            const on = o.key === curKey;
+            return (
+              <G key={o.key}>
+                {on && <Circle cx={x} cy={y} r={10} fill={C.sky} opacity={0.35} />}
+                <Circle cx={x} cy={y} r={on ? 5.5 : 4.5} fill={C.sky} stroke={C.text} strokeWidth={1.5} />
+              </G>
+            );
+          })}
           {showIss && <Path d={issTrack} fill="none" stroke={ORBITS.ISS.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showTg && <Path d={tgTrack} fill="none" stroke={ORBITS.Tiangong.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showIss && (
@@ -163,6 +184,12 @@ export default function MapsScreen() {
             <Pressable key={`label-${p.name}`} onPress={() => toggle(p.name)} hitSlop={6} accessible={false} style={[styles.label, pos]}>
               <Text style={[styles.labelText, { color: on ? (isMars ? C.skySoft : C.orangeSoft) : C.text }]}>{p.name}</Text>
             </Pressable>
+          );
+        })}
+        {orbiters.map((o) => {
+          const [x, y] = ringPos(o.angle);
+          return (
+            <Pressable key={o.key} onPress={() => toggle(o.key)} accessibilityRole="button" accessibilityLabel={`${o.name}, orbiter`} style={[styles.hit, { left: `${(x / MAP_W) * 100}%`, top: `${(y / MAP_H) * 100}%` }]} />
           );
         })}
         {showIss && (
@@ -232,6 +259,29 @@ export default function MapsScreen() {
           );
         })}
       </View>
+      {isMars && (
+        <>
+          <Text style={styles.h2} accessibilityRole="header">Orbiters</Text>
+          <View style={{ gap: 6 }}>
+            {orbiters.map((o) => {
+              const on = o.key === curKey;
+              return (
+                <Pressable
+                  key={o.key}
+                  onPress={() => toggle(o.key)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  style={[styles.row, on && { borderColor: C.sky, backgroundColor: 'rgba(90,176,255,0.12)' }]}>
+                  <View style={[styles.rowDot, { backgroundColor: C.sky, borderWidth: 1.5, borderColor: C.text }]} />
+                  <Flag country={o.country} code={o.code} width={24} />
+                  <Text style={styles.rowName} numberOfLines={1}>{o.name}</Text>
+                  <Text style={styles.small}>{o.sub}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </>
+      )}
     </Screen>
   );
 }
