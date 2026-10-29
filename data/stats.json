@@ -1,0 +1,101 @@
+{
+  "updated": "2026-10-29T10:48:17.004Z",
+  "source": "Launch Library 2 by The Space Devs",
+  "fiveYearStart": "2022-01-01",
+  "periods": {
+    "allTime": {
+      "USA": {
+        "launches": 2503,
+        "successRate": 93
+      },
+      "China": {
+        "launches": 810,
+        "successRate": 95
+      },
+      "Russia": {
+        "launches": 3390,
+        "successRate": 94
+      },
+      "Europe": {
+        "launches": 352,
+        "successRate": 94
+      },
+      "India": {
+        "launches": 105,
+        "successRate": 86
+      },
+      "Japan": {
+        "launches": 153,
+        "successRate": 86
+      }
+    },
+    "last5": {
+      "USA": {
+        "launches": 681,
+        "successRate": 98,
+        "rocket": "Falcon 9"
+      },
+      "China": {
+        "launches": 368,
+        "successRate": 96,
+        "rocket": "Long March 2D"
+      },
+      "Russia": {
+        "launches": 88,
+        "successRate": 100,
+        "rocket": "Soyuz 2.1a"
+      },
+      "Europe": {
+        "launches": 29,
+        "successRate": 90,
+        "rocket": "Vega-C"
+      },
+      "India": {
+        "launches": 26,
+        "successRate": 88,
+        "rocket": "PSLV-XL"
+      },
+      "Japan": {
+        "launches": 19,
+        "successRate": 68,
+        "rocket": "H3-22"
+      }
+    },
+    "last12": {
+      "USA": {
+        "launches": 170,
+        "successRate": 99,
+        "rocket": "Falcon 9"
+      },
+      "China": {
+        "launches": 102,
+        "successRate": 95,
+        "rocket": "Long March 6A"
+      },
+      "Russia": {
+        "launches": 18,
+        "successRate": 100,
+        "rocket": "Soyuz 2.1a"
+      },
+      "Europe": {
+        "launches": 10,
+        "successRate": 100,
+        "rocket": "Ariane 62"
+      },
+      "India": {
+        "launches": 5,
+        "successRate": 80,
+        "rocket": "LVM-3 (GSLV Mk III)"
+      },
+      "Japan": {
+        "launches": 5,
+        "successRate": 60,
+        "rocket": "H3-22"
+      }
+    }
+  },
+  "world": {
+    "launches": 7660,
+    "successRate": 93
+  }
+}
