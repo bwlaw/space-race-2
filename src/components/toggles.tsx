@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { C } from '@/constants/theme';
 
-type Option<T extends string> = { value: T; label: string };
+type Option<T extends string> = { value: T; label: string; disabled?: boolean };
 
 /** Prominent segmented control: the selected option fills sky blue. */
 export function Segmented<T extends string>({ options, value, onChange }: { options: Option<T>[]; value: T; onChange: (v: T) => void }) {
@@ -34,12 +34,13 @@ export function TextTabs<T extends string>({ options, value, onChange }: { optio
         return (
           <Pressable
             key={o.value}
-            onPress={() => onChange(o.value)}
+            onPress={o.disabled ? undefined : () => onChange(o.value)}
+            disabled={o.disabled}
             accessibilityRole="tab"
-            accessibilityState={{ selected: on }}
+            accessibilityState={{ selected: on, disabled: !!o.disabled }}
             hitSlop={6}
             style={[styles.tab, { borderBottomColor: on ? C.sky : 'transparent' }]}>
-            <Text style={[styles.tabText, { color: on ? C.text : C.dim }]}>{o.label}</Text>
+            <Text style={[styles.tabText, { color: o.disabled ? '#3E5174' : on ? C.text : C.dim }]}>{o.label}</Text>
           </Pressable>
         );
       })}

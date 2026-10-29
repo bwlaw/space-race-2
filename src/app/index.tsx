@@ -33,7 +33,8 @@ export default function RaceScreen() {
   const list = useMemo(() => milestoneRows(period, pick), [period, pick]);
   const shown = more ? list : list.slice(0, 3);
 
-  const changeMetric = (m: Metric) => { setMetric(m); setMore(false); };
+  // "Last 12 months" is not available for milestones yet; fall back to the 5-year view.
+  const changeMetric = (m: Metric) => { setMetric(m); setMore(false); if (m === 'milestones' && period === 'last12') setPeriod('last5'); };
   const changePeriod = (p: Period) => { setPeriod(p); setMore(false); };
   const togglePick = (c: Country) => { setPick(pick === c ? null : c); setMore(false); };
 
@@ -65,7 +66,7 @@ export default function RaceScreen() {
           : 'Each milestone scores once for every country that reaches it with its own rocket or spacecraft, not only for the first. Points run from 5 for smaller steps, such as a spacewalk or a comet landing, to 25 for humans walking on the Moon. Humans in orbit, own space stations, soft Moon landings and Mars rovers score 15. The biggest open goal, humans on Mars, is worth 40.';
 
   return (
-    <Screen title="Space Race" right={isMiles ? <Pill label={isAll || period === 'last5' ? 'Draft scoring' : 'Sample data'} /> : stats ? <LivePill state={statsRemote.state} /> : <Pill label="Sample data" />}>
+    <Screen title="Space Race" right={isMiles ? <Pill label="Draft scoring" /> : stats ? <LivePill state={statsRemote.state} /> : <Pill label="Sample data" />}>
       <View style={styles.leaderRow}>
         <Flag country={rows[0].country} width={21} />
         <Text style={styles.leader}>{`${rows[0].country} leads`}</Text>
@@ -73,7 +74,7 @@ export default function RaceScreen() {
 
       <View style={{ gap: 4 }}>
         <Segmented options={[{ value: 'milestones', label: 'Milestones' }, { value: 'launches', label: 'Launches' }]} value={metric} onChange={changeMetric} />
-        <TextTabs options={[{ value: 'allTime', label: 'All-time' }, { value: 'last5', label: 'Last 5 years' }, { value: 'last12', label: 'Last 12 months' }]} value={period} onChange={changePeriod} />
+        <TextTabs options={[{ value: 'allTime', label: 'All-time' }, { value: 'last5', label: 'Last 5 years' }, { value: 'last12', label: 'Last 12 months', disabled: metric === 'milestones' }]} value={period} onChange={changePeriod} />
       </View>
 
       <View style={styles.panel}>
