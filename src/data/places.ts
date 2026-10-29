@@ -91,7 +91,7 @@ export const STATIONS: Record<'ISS' | 'Tiangong', InfoCard> = {
 /** Shown when nothing is selected on the Moon or Mars map. */
 export const BODY_INFO: Record<'Moon' | 'Mars', InfoCard> = {
   Moon: {
-    name: 'The Moon',
+    name: 'Moon',
     countries: ['USA', 'Russia', 'China', 'India', 'Japan'],
     kind: '',
     inUse: '12 people walked on the Moon between 1969 and 1972',

@@ -114,7 +114,7 @@ export default function HistoryScreen() {
         </View>
       </View>
 
-      <CountryFilter value={who} onChange={jump} />
+      <CountryFilter value={who} onChange={(c) => jump(c === who ? null : c)} />
 
       <View style={styles.grid}>
         <View style={styles.tile}>

@@ -144,7 +144,7 @@ export default function LaunchesScreen() {
           return (
             <Pressable
               key={l.id}
-              onPress={() => setPicked(l.id)}
+              onPress={() => setPicked(picked === l.id ? null : l.id)}
               accessibilityRole="button"
               accessibilityState={{ selected: onTop }}
               accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}. Show at the top`}
