@@ -7,6 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CountryFilter } from '@/components/country-filter';
 import { Flag } from '@/components/flag';
+import { Section } from '@/components/section';
 import { LivePill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
 import type { Country } from '@/data/countries';
@@ -51,6 +52,7 @@ export default function LaunchesScreen() {
   const [filter, setFilter] = useState<Country | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
+  const [openList, setOpenList] = useState(true);
 
   // Launches stay listed until they have lifted off.
   const upcoming = useMemo(() => (data ?? []).filter((l) => l.net > now - 60000).sort((a, b) => a.net - b.net), [data, now]);
@@ -124,8 +126,8 @@ export default function LaunchesScreen() {
 
       <CountryFilter value={filter} onChange={pickFilter} />
 
-      <View style={{ gap: 8 }}>
-        {list.slice(0, 12).map((l) => {
+      <Section title={filter ? `Upcoming from ${filter}` : 'Upcoming launches'} count={list.length} open={openList} onToggle={() => setOpenList(!openList)}>
+        {list.map((l) => {
           const onTop = top?.id === l.id;
           return (
             <Pressable
@@ -154,7 +156,7 @@ export default function LaunchesScreen() {
           );
         })}
         {list.length === 0 && state !== 'loading' && <Text style={styles.small}>No upcoming launches for this country.</Text>}
-      </View>
+      </Section>
       <Text style={styles.credit}>Launch data: Launch Library 2 by The Space Devs</Text>
     </Screen>
   );

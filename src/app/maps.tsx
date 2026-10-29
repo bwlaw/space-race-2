@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
+import { Chevron, Section } from '@/components/section';
 import type { Country } from '@/data/countries';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
@@ -37,29 +38,6 @@ const toPath = (segments: [number, number][][]) =>
   segments
     .map((seg) => seg.map(([lon, lat], i) => { const [x, y] = project(lon, lat); return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }).join(''))
     .join('');
-
-function Chevron({ open }: { open: boolean }) {
-  return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" style={{ transform: [{ rotate: open ? '180deg' : '0deg' }] }}>
-      <Path d="M6 9l6 6 6-6" fill="none" stroke={C.muted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function Section({ title, count, open, onToggle, children }: { title: string; count: number; open: boolean; onToggle: () => void; children: ReactNode }) {
-  return (
-    <View style={{ gap: 6 }}>
-      <Pressable onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded: open }} style={styles.sectionHead}>
-        <Text style={styles.h2} accessibilityRole="header">{title}</Text>
-        <View style={styles.sectionRight}>
-          <Text style={styles.small}>{count}</Text>
-          <Chevron open={open} />
-        </View>
-      </Pressable>
-      {open && children}
-    </View>
-  );
-}
 
 type ItemProps = {
   on: boolean;
