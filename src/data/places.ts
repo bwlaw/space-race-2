@@ -20,6 +20,8 @@ export type Place = {
   note: string;
   /** Year used for sorting landers and rovers, newest first. */
   year: number;
+  /** False: only a dot on the map, the name shows when selected. */
+  label?: boolean;
 };
 
 export const PLACES: Record<Body, Place[]> = {
@@ -32,6 +34,13 @@ export const PLACES: Record<Body, Place[]> = {
     { name: 'Sriharikota', country: 'India', lon: 80.2, lat: 13.7, dx: -9, dy: 4, anchor: 'end', sub: 'since 1979', kind: 'Launch site, India', inUse: 'In use since 1979', note: 'India’s spaceport, where the Chandrayaan Moon missions began.', year: 1979 },
     { name: 'Wenchang', country: 'China', lon: 110.9, lat: 19.6, dx: 8, dy: 13, anchor: 'start', sub: 'since 2016', kind: 'Launch site, Hainan island', inUse: 'In use since 2016', note: 'China’s newest site for heavy rockets and the Tiangong station modules.', year: 2016 },
     { name: 'Mahia', country: null, code: 'NZL', lon: 177.87, lat: -39.26, dx: -9, dy: 4, anchor: 'end', sub: 'since 2017', kind: 'Launch site, New Zealand', inUse: 'In use since 2017', note: 'Rocket Lab’s private spaceport, where its Electron rockets lift off. It was the first private site to host an orbital launch attempt.', year: 2017 },
+    { name: 'Jiuquan', country: 'China', lon: 100.3, lat: 41.0, dx: 8, dy: 4, anchor: 'start', sub: 'since 1970', kind: 'Launch site, Gobi Desert', inUse: 'In use since 1970', note: 'China’s first satellite and every crewed Shenzhou flight lifted off from here.', year: 1970 },
+    { name: 'Xichang', country: 'China', lon: 102.0, lat: 28.2, dx: 0, dy: 14, anchor: 'middle', sub: 'since 1984', kind: 'Launch site, Sichuan', inUse: 'In use since 1984', note: 'Launched China’s Chang’e Moon missions up to Chang’e 4.', year: 1984, label: false },
+    { name: 'Taiyuan', country: 'China', lon: 111.6, lat: 38.8, dx: 8, dy: 4, anchor: 'start', sub: 'since 1988', kind: 'Launch site, Shanxi', inUse: 'In use since 1988', note: 'China’s site for weather and Earth observation satellites in polar orbits.', year: 1988, label: false },
+    { name: 'Plesetsk', country: 'Russia', lon: 40.6, lat: 62.9, dx: 0, dy: -9, anchor: 'middle', sub: 'since 1966', kind: 'Launch site, northern Russia', inUse: 'In use since 1966', note: 'Russia’s military spaceport, once the busiest launch site in the world.', year: 1966 },
+    { name: 'Vostochny', country: 'Russia', lon: 128.3, lat: 51.9, dx: 8, dy: -6, anchor: 'start', sub: 'since 2016', kind: 'Launch site, Russian Far East', inUse: 'In use since 2016', note: 'Russia’s newest spaceport, built so it can launch from its own soil instead of Baikonur.', year: 2016 },
+    { name: 'Wallops', country: 'USA', lon: -75.5, lat: 37.9, dx: 8, dy: -6, anchor: 'start', sub: 'since 1961', kind: 'Launch site, Virginia', inUse: 'In use since 1961', note: 'NASA’s site on the Atlantic coast, used today by Northrop Grumman and Rocket Lab.', year: 1961, label: false },
+    { name: 'Uchinoura', country: 'Japan', lon: 131.1, lat: 31.25, dx: 8, dy: 4, anchor: 'start', sub: 'since 1970', kind: 'Launch site, Kagoshima', inUse: 'In use since 1970', note: 'Japan’s first satellite, Ohsumi, launched here. Today it hosts Epsilon science missions.', year: 1970, label: false },
     { name: 'Tanegashima', country: 'Japan', lon: 131, lat: 30.4, dx: 0, dy: -10, anchor: 'middle', sub: 'since 1975', kind: 'Launch site, Japan', inUse: 'In use since 1975', note: 'Japan’s main spaceport, where H3 rockets lift off.', year: 1975 },
   ],
   Moon: [

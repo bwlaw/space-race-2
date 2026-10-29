@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
+import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
+import type { Country } from '@/data/countries';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
@@ -37,10 +38,77 @@ const toPath = (segments: [number, number][][]) =>
     .map((seg) => seg.map(([lon, lat], i) => { const [x, y] = project(lon, lat); return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }).join(''))
     .join('');
 
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24" style={{ transform: [{ rotate: open ? '180deg' : '0deg' }] }}>
+      <Path d="M6 9l6 6 6-6" fill="none" stroke={C.muted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function Section({ title, count, open, onToggle, children }: { title: string; count: number; open: boolean; onToggle: () => void; children: ReactNode }) {
+  return (
+    <View style={{ gap: 6 }}>
+      <Pressable onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded: open }} style={styles.sectionHead}>
+        <Text style={styles.h2} accessibilityRole="header">{title}</Text>
+        <View style={styles.sectionRight}>
+          <Text style={styles.small}>{count}</Text>
+          <Chevron open={open} />
+        </View>
+      </Pressable>
+      {open && children}
+    </View>
+  );
+}
+
+type ItemProps = {
+  on: boolean;
+  onPress: () => void;
+  name: string;
+  sub: string;
+  country: Country | null;
+  code?: string;
+  dot: 'orange' | 'mars' | 'sky';
+  accent: string;
+  kind: string;
+  inUse: string;
+  note: string;
+};
+
+function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inUse, note }: ItemProps) {
+  const dotStyle =
+    dot === 'mars'
+      ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.sky }
+      : dot === 'sky'
+        ? { backgroundColor: C.sky, borderWidth: 1.5, borderColor: C.text }
+        : { backgroundColor: C.orange };
+  const tint = accent === C.sky ? 'rgba(90,176,255,0.12)' : 'rgba(255,159,67,0.12)';
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ expanded: on }} style={[styles.item, on && { borderColor: accent, backgroundColor: tint }]}>
+      <View style={styles.itemHead}>
+        <View style={[styles.rowDot, dotStyle]} />
+        <Flag country={country} code={code} width={24} />
+        <Text style={styles.rowName} numberOfLines={on ? 2 : 1}>{name}</Text>
+        <Text style={styles.small}>{sub}</Text>
+        <Chevron open={on} />
+      </View>
+      {on && (
+        <View style={styles.itemBody}>
+          {!!kind && <Text style={styles.small}>{kind}</Text>}
+          <Text style={styles.inUse}>{inUse}</Text>
+          <Text style={styles.infoNote}>{note}</Text>
+        </View>
+      )}
+    </Pressable>
+  );
+}
+
 export default function MapsScreen() {
   const [body, setBody] = useState<Body>('Earth');
   const [orbit, setOrbit] = useState<Orbit>('Both');
   const [sel, setSel] = useState<string | null>(null);
+  const [openList, setOpenList] = useState(false);
+  const [openOrbiters, setOpenOrbiters] = useState(false);
   const now = useNow(2000);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
   const tgTle = useRemote('tle-tiangong', TLE_URLS.Tiangong, 6 * HOUR, parseTle, true);
@@ -60,11 +128,6 @@ export default function MapsScreen() {
   const cardAccent = body === 'Moon' ? C.sky : accent;
   const orbiters = useMemo(() => (isMars ? [...MARS_ORBITERS].sort((a, b) => b.year - a.year) : []), [isMars]);
   const orbiter = orbiters.find((o) => o.key === sel) ?? null;
-  // One lap of the ring every 3 minutes, each orbiter at its own place on it.
-  const ringPos = (deg: number) => {
-    const a = ((deg + (now / 180000) * 360) * Math.PI) / 180;
-    return [175 + 172 * Math.cos(a), 120 + 115 * Math.sin(a)] as const;
-  };
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
   const showIss = isEarth && orbit !== 'Tiangong';
   const showTg = isEarth && orbit !== 'ISS';
@@ -122,16 +185,6 @@ export default function MapsScreen() {
         <Image source={MAP_IMAGES[body]} style={styles.fill} contentFit="contain" accessibilityLabel={`Map of ${body}`} />
         <Svg width="100%" height="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={StyleSheet.absoluteFill} pointerEvents="none">
           {isMars && <Ellipse cx={175} cy={120} rx={172} ry={115} fill="none" stroke={C.sky} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 5" />}
-          {orbiters.map((o) => {
-            const [x, y] = ringPos(o.angle);
-            const on = o.key === curKey;
-            return (
-              <G key={o.key}>
-                {on && <Circle cx={x} cy={y} r={10} fill={C.sky} opacity={0.35} />}
-                <Circle cx={x} cy={y} r={on ? 5.5 : 4.5} fill={C.sky} stroke={C.text} strokeWidth={1.5} />
-              </G>
-            );
-          })}
           {showIss && <Path d={issTrack} fill="none" stroke={ORBITS.ISS.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showTg && <Path d={tgTrack} fill="none" stroke={ORBITS.Tiangong.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showIss && (
@@ -170,7 +223,7 @@ export default function MapsScreen() {
             </Pressable>
           );
         })}
-        {places.map((p) => {
+        {places.filter((p) => p.label !== false || p.name === curKey).map((p) => {
           const [x, y] = project(p.lon, p.lat);
           const on = p.name === curKey;
           const top = `${((y + p.dy - 9) / MAP_H) * 100}%` as const;
@@ -184,12 +237,6 @@ export default function MapsScreen() {
             <Pressable key={`label-${p.name}`} onPress={() => toggle(p.name)} hitSlop={6} accessible={false} style={[styles.label, pos]}>
               <Text style={[styles.labelText, { color: on ? (isMars ? C.skySoft : C.orangeSoft) : C.text }]}>{p.name}</Text>
             </Pressable>
-          );
-        })}
-        {orbiters.map((o) => {
-          const [x, y] = ringPos(o.angle);
-          return (
-            <Pressable key={o.key} onPress={() => toggle(o.key)} accessibilityRole="button" accessibilityLabel={`${o.name}, orbiter`} style={[styles.hit, { left: `${(x / MAP_W) * 100}%`, top: `${(y / MAP_H) * 100}%` }]} />
           );
         })}
         {showIss && (
@@ -240,47 +287,47 @@ export default function MapsScreen() {
         ))}
       </View>
 
-      <Text style={styles.h2} accessibilityRole="header">{isEarth ? 'Launch Sites' : 'Landers and Rovers'}</Text>
-      <View style={{ gap: 6 }}>
-        {places.map((p) => {
-          const on = p.name === curKey;
-          return (
-            <Pressable
-              key={p.name}
-              onPress={() => toggle(p.name)}
-              accessibilityRole="button"
-              accessibilityState={{ selected: on }}
-              style={[styles.row, on && { borderColor: accent, backgroundColor: isMars ? 'rgba(90,176,255,0.12)' : 'rgba(255,159,67,0.12)' }]}>
-              <View style={[styles.rowDot, isMars ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.sky } : { backgroundColor: C.orange }]} />
-              <Flag country={p.country} code={p.code} width={24} />
-              <Text style={styles.rowName}>{p.name}</Text>
-              <Text style={styles.small}>{p.sub}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+      <Section
+        title={isEarth ? 'Launch Sites' : 'Landers and Rovers'}
+        count={places.length}
+        open={openList}
+        onToggle={() => setOpenList(!openList)}>
+        {places.map((p) => (
+          <ItemRow
+            key={p.name}
+            on={p.name === curKey}
+            onPress={() => toggle(p.name)}
+            name={p.name}
+            sub={p.sub}
+            country={p.country}
+            code={p.code}
+            dot={isMars ? 'mars' : 'orange'}
+            accent={accent}
+            kind={p.kind}
+            inUse={p.inUse}
+            note={p.note}
+          />
+        ))}
+      </Section>
       {isMars && (
-        <>
-          <Text style={styles.h2} accessibilityRole="header">Orbiters</Text>
-          <View style={{ gap: 6 }}>
-            {orbiters.map((o) => {
-              const on = o.key === curKey;
-              return (
-                <Pressable
-                  key={o.key}
-                  onPress={() => toggle(o.key)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: on }}
-                  style={[styles.row, on && { borderColor: C.sky, backgroundColor: 'rgba(90,176,255,0.12)' }]}>
-                  <View style={[styles.rowDot, { backgroundColor: C.sky, borderWidth: 1.5, borderColor: C.text }]} />
-                  <Flag country={o.country} code={o.code} width={24} />
-                  <Text style={styles.rowName} numberOfLines={1}>{o.name}</Text>
-                  <Text style={styles.small}>{o.sub}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </>
+        <Section title="Orbiters" count={orbiters.length} open={openOrbiters} onToggle={() => setOpenOrbiters(!openOrbiters)}>
+          {orbiters.map((o) => (
+            <ItemRow
+              key={o.key}
+              on={o.key === curKey}
+              onPress={() => toggle(o.key)}
+              name={o.name}
+              sub={o.sub}
+              country={o.country}
+              code={o.code}
+              dot="sky"
+              accent={C.sky}
+              kind={o.kind}
+              inUse={o.inUse}
+              note={o.note}
+            />
+          ))}
+        </Section>
       )}
     </Screen>
   );
@@ -312,6 +359,11 @@ const styles = StyleSheet.create({
   statValue: { fontFamily: F.display, fontSize: 18, color: C.text },
   h2: { fontFamily: F.display, fontSize: 22, color: C.text, marginTop: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(13,33,71,0.8)' },
+  sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44, marginTop: 6 },
+  sectionRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  item: { borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(13,33,71,0.8)', paddingHorizontal: 12 },
+  itemHead: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
+  itemBody: { gap: 3, paddingBottom: 12, paddingLeft: 20 },
   rowDot: { width: 10, height: 10, borderRadius: 999 },
   rowName: { flex: 1, fontSize: 14, fontWeight: '600', color: C.text },
 });
