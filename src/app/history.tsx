@@ -3,7 +3,11 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
+import Constants from 'expo-constants';
+import * as WebBrowser from 'expo-web-browser';
+
 import { CountryFilter } from '@/components/country-filter';
+import { Section } from '@/components/section';
 import { Flag } from '@/components/flag';
 import { LivePill, Pill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
@@ -13,6 +17,9 @@ import { MILESTONES } from '@/data/race';
 import { formatNumber } from '@/lib/race';
 import { HOUR, useRemote } from '@/lib/remote';
 import { parseStats, STATS_URL } from '@/lib/stats';
+
+const PRIVACY_URL = 'https://bwlaw.github.io/space-race-2/privacy.html';
+const SUPPORT_URL = 'https://github.com/bwlaw/space-race-2/issues';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const FIRST_YEAR = 1957;
@@ -45,6 +52,7 @@ function Ring({ percent }: { percent: number }) {
 export default function HistoryScreen() {
   const [who, setWho] = useState<Country | null>(null);
   const [year, setYear] = useState(1971);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const today = new Date();
   const md = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -184,6 +192,19 @@ export default function HistoryScreen() {
           {mine.length === 0 && <Text style={[styles.small, styles.eventEmpty]}>{`${who ?? 'No country'} had reached a milestone by ${year}.`}</Text>}
         </View>
       </View>
+      <Section title="About" count={0} hideCount open={aboutOpen} onToggle={() => setAboutOpen(!aboutOpen)}>
+        <View style={styles.about}>
+          <Text style={styles.aboutText}>{`Space Race 2.0, version ${Constants.expoConfig?.version ?? '1.0.0'}`}</Text>
+          <Text style={styles.small}>Launch, crew and statistics data: Launch Library 2 by The Space Devs. Station orbits: CelesTrak. Milestones and dates compiled for this app; point values are a draft.</Text>
+          <Text style={styles.small}>The app collects no personal data. Reminders are scheduled on your phone only.</Text>
+          <Pressable onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL)} accessibilityRole="link" hitSlop={6}>
+            <Text style={styles.link}>Privacy policy</Text>
+          </Pressable>
+          <Pressable onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)} accessibilityRole="link" hitSlop={6}>
+            <Text style={styles.link}>Feedback and support</Text>
+          </Pressable>
+        </View>
+      </Section>
     </Screen>
   );
 }
@@ -195,7 +216,10 @@ const styles = StyleSheet.create({
   dateMonth: { fontSize: 12, fontWeight: '600', color: C.bg },
   factText: { fontSize: 16, fontWeight: '600', lineHeight: 21, color: C.text },
   row6: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  small: { fontSize: 12, color: C.muted },
+  small: { fontSize: 12, color: C.muted, lineHeight: 17 },
+  about: { padding: 14, borderRadius: 16, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, gap: 8 },
+  aboutText: { fontSize: 14, fontWeight: '600', color: C.text },
+  link: { fontSize: 14, fontWeight: '600', color: C.sky },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   tile: { width: '48%', flexGrow: 1, padding: 12, paddingHorizontal: 14, borderRadius: 16, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, gap: 2 },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },

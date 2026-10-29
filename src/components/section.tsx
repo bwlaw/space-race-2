@@ -13,13 +13,13 @@ export function Chevron({ open }: { open: boolean }) {
 }
 
 /** A heading with a count that opens and closes the list below it. */
-export function Section({ title, count, open, onToggle, children }: { title: string; count: number; open: boolean; onToggle: () => void; children: ReactNode }) {
+export function Section({ title, count, open, onToggle, children, hideCount }: { title: string; count: number; open: boolean; onToggle: () => void; children: ReactNode; hideCount?: boolean }) {
   return (
     <View style={{ gap: 6 }}>
       <Pressable onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded: open }} style={styles.head}>
         <Text style={styles.title} accessibilityRole="header">{title}</Text>
         <View style={styles.right}>
-          <Text style={styles.count}>{count}</Text>
+          {!hideCount && <Text style={styles.count}>{count}</Text>}
           <Chevron open={open} />
         </View>
       </Pressable>

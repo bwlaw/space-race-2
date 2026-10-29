@@ -12,6 +12,7 @@ import { LivePill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
 import type { Country } from '@/data/countries';
 import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
+import { useReminders } from '@/lib/reminders';
 import { MINUTE, useRemote } from '@/lib/remote';
 
 const PAD = require('@/assets/images/scenes/launch-pad.png');
@@ -51,7 +52,8 @@ export default function LaunchesScreen() {
   const now = useNow(1000);
   const [filter, setFilter] = useState<Country | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
-  const [reminders, setReminders] = useState<Record<string, boolean>>({});
+  const reminders = useReminders();
+  const [notice, setNotice] = useState<string | null>(null);
   const [openList, setOpenList] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
@@ -109,12 +111,20 @@ export default function LaunchesScreen() {
                 </View>
               ))}
               <Pressable
-                onPress={() => setReminders({ ...reminders, [top.id]: !reminders[top.id] })}
+                onPress={async () => {
+                  const r = await reminders.toggle(top);
+                  setNotice(
+                    r === 'on' ? 'Reminder set for 30 minutes before launch.'
+                    : r === 'off' ? 'Reminder removed.'
+                    : r === 'denied' ? 'Allow notifications for Space Race in iPhone Settings to get reminders.'
+                    : 'Too close to launch for a reminder.',
+                  );
+                }}
                 accessibilityRole="button"
-                accessibilityLabel={reminders[top.id] ? 'Reminder on. Tap to turn off' : 'Remind me before launch'}
-                accessibilityState={{ selected: !!reminders[top.id] }}
+                accessibilityLabel={reminders.isOn(top.id) ? 'Reminder on. Tap to turn off' : 'Remind me 30 minutes before launch'}
+                accessibilityState={{ selected: reminders.isOn(top.id) }}
                 style={styles.bell}>
-                <BellIcon filled={!!reminders[top.id]} />
+                <BellIcon filled={reminders.isOn(top.id)} />
               </Pressable>
             </View>
           </>
@@ -125,6 +135,7 @@ export default function LaunchesScreen() {
         )}
       </View>
 
+      {notice && <Text style={styles.notice} accessibilityLiveRegion="polite">{notice}</Text>}
       <CountryFilter value={filter} onChange={pickFilter} />
 
       <Section title={filter ? `Upcoming from ${filter}` : 'Upcoming launches'} count={list.length} open={openList} onToggle={() => setOpenList(!openList)}>
@@ -188,6 +199,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 15, fontWeight: '600', color: C.text },
   small: { fontSize: 13, color: C.muted },
   credit: { fontSize: 11, color: C.dim },
+  notice: { fontSize: 13, color: C.skySoft, marginTop: -6 },
   moreBtn: { height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
   moreText: { fontSize: 14, fontWeight: '600', color: C.text },
   streamLink: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2, alignSelf: 'flex-start' },
