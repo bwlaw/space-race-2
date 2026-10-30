@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
+import { OrbitingStation } from '@/components/orbiting-station';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
@@ -12,7 +13,7 @@ import { STATION_NOTES, type Station } from '@/data/crew';
 import { EXPEDITIONS_URL, parseExpeditions } from '@/lib/ll2';
 import { HOUR, useRemote } from '@/lib/remote';
 
-const STATION_ART = require('@/assets/images/scenes/station.png');
+const ORBIT_ART = require('@/assets/images/scenes/orbit-bg.png');
 
 function Helmet() {
   return (
@@ -53,7 +54,8 @@ export default function SpaceScreen() {
   return (
     <Screen title="In Space" right={<LivePill state={state} />}>
       <View style={styles.hero}>
-        <Image source={STATION_ART} style={styles.fill} contentFit="cover" accessible={false} />
+        <Image source={ORBIT_ART} style={styles.fill} contentFit="cover" accessible={false} />
+        <OrbitingStation />
         <View style={styles.heroText}>
           <Text style={styles.count} accessibilityLabel={`${everyone.length} people off Earth`}>{everyone.length}</Text>
           <Text style={styles.countLabel}>People off Earth</Text>
