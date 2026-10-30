@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Flag } from '@/components/flag';
 import { FutureCard, LaunchCard, LaunchStatsTable, MilestoneCard } from '@/components/race-cards';
 import { RaceLanes } from '@/components/race-lanes';
-import { LivePill, Pill, Screen } from '@/components/screen';
+import { Pill, Screen } from '@/components/screen';
 import { Segmented, TextTabs } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
 import { COUNTRIES, type Country } from '@/data/countries';
@@ -44,7 +44,7 @@ export default function RaceScreen() {
   const latest = (recent.data ?? [])
     .filter((l) => !pick || l.country === pick)
     .sort((a, b) => b.net - a.net)
-    .slice(0, 3)
+    .slice(0, 5)
     .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), success: l.status === 'Success' }));
 
   const periodWords = isAll ? '' : isFive ? ' in last 5 years' : ' in last 12 months';
@@ -66,7 +66,7 @@ export default function RaceScreen() {
           : 'Each milestone scores once for every country that reaches it with its own rocket or spacecraft, not only for the first. Points run from 5 for smaller steps, such as a spacewalk or a comet landing, to 25 for humans walking on the Moon. Humans in orbit, own space stations, soft Moon landings and Mars rovers score 15. The biggest open goal, humans on Mars, is worth 40.';
 
   return (
-    <Screen title="Space Race" right={isMiles ? <Pill label="Draft scoring" /> : stats ? <LivePill state={statsRemote.state} /> : <Pill label="Sample data" />}>
+    <Screen title="Space Race" right={!isMiles && !stats ? <Pill label="Sample data" /> : undefined}>
       <View style={styles.leaderRow}>
         <Flag country={rows[0].country} width={21} />
         <Text style={styles.leader}>{`${rows[0].country} leads`}</Text>

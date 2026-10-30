@@ -8,7 +8,7 @@ export type Milestone = {
   reachedBy: [Country, number][];
 };
 
-/** Real milestones. Russia carries the Soviet Union's achievements. Point values are a draft. */
+/** Real milestones. Russia carries the Soviet Union's achievements. Point values are the app's own weighting. */
 export const MILESTONES: Milestone[] = [
   { name: 'Satellite launch on its own rocket', points: 10, first: 'Soviet Union, 1957 (Sputnik 1)', reachedBy: [['Russia', 1957], ['USA', 1958], ['Japan', 1970], ['China', 1970], ['Europe', 1979], ['India', 1980]] },
   { name: 'Spacecraft reaches the Moon', points: 10, first: 'Soviet Union, 1959 (Luna 2)', reachedBy: [['Russia', 1959], ['USA', 1962], ['Japan', 1990], ['Europe', 2004], ['China', 2007], ['India', 2008]] },

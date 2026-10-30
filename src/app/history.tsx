@@ -9,7 +9,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { CountryFilter } from '@/components/country-filter';
 import { Section } from '@/components/section';
 import { Flag } from '@/components/flag';
-import { LivePill, Pill, Screen } from '@/components/screen';
+import { Pill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
 import { COUNTRIES, type Country } from '@/data/countries';
 import { COUNTRY_STATS, DAY_FACTS, displayCountry } from '@/data/history';
@@ -95,7 +95,7 @@ export default function HistoryScreen() {
     : `${events.length} milestones reached by ${year}. Tap a flag to follow one country.`;
 
   return (
-    <Screen title="History" right={live ? <LivePill state="live" /> : <Pill label="Sample data" />}>
+    <Screen title="History" right={live ? undefined : <Pill label="Sample data" />}>
       <View style={styles.dayCard}>
         <View style={styles.dateTile}>
           <Text style={styles.dateNum}>{today.getDate()}</Text>
@@ -207,7 +207,7 @@ export default function HistoryScreen() {
       <Section title="About" count={0} hideCount open={aboutOpen} onToggle={() => setAboutOpen(!aboutOpen)}>
         <View style={styles.about}>
           <Text style={styles.aboutText}>{`Space Race 2.0, version ${Constants.expoConfig?.version ?? '1.0.0'}`}</Text>
-          <Text style={styles.small}>Launch, crew and statistics data: Launch Library 2 by The Space Devs. Station orbits: CelesTrak. Milestones and dates compiled for this app; point values are a draft.</Text>
+          <Text style={styles.small}>Launch, crew and statistics data: Launch Library 2 by The Space Devs. Station orbits: CelesTrak. Milestones and dates compiled for this app, which also sets the points for each milestone.</Text>
           <Text style={styles.small}>The app collects no personal data. Reminders are scheduled on your phone only.</Text>
           <Pressable onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL)} accessibilityRole="link" hitSlop={6}>
             <Text style={styles.link}>Privacy policy</Text>

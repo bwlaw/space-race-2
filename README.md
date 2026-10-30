@@ -15,7 +15,7 @@ Built with Expo (React Native, TypeScript, Expo Router).
 - Step 7 (this version): daily data job. `.github/workflows/update-stats.yml` runs `scripts/update-stats.mjs` every night, which writes `data/stats.json` (launch counts and success rates per country). The app reads it from GitHub and falls back to sample figures until the first run.
 - Next: App Store preparation.
 
-Data marked "Sample data" in the app is placeholder data; screens marked "Live" use real data. Milestones and their years are real; the point values are a draft.
+Data marked "Sample data" in the app is placeholder data; screens marked "Live" use real data. Milestones and their years are real; the points per milestone are the app's own weighting.
 
 ## Run it on your iPhone
 
