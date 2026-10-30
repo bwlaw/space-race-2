@@ -16,7 +16,7 @@ import { COUNTRY_STATS, DAY_FACTS, displayCountry } from '@/data/history';
 import { MILESTONES } from '@/data/race';
 import { formatNumber } from '@/lib/race';
 import { HOUR, useRemote } from '@/lib/remote';
-import { parseStats, STATS_URL } from '@/lib/stats';
+import { ON_THIS_DAY_URL, parseOnThisDay, parseStats, STATS_URL } from '@/lib/stats';
 
 const PRIVACY_URL = 'https://bwlaw.github.io/space-race-2/privacy.html';
 const SUPPORT_URL = 'https://github.com/bwlaw/space-race-2/issues';
@@ -58,6 +58,8 @@ export default function HistoryScreen() {
   const today = new Date();
   const md = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const facts = DAY_FACTS.filter((f) => f.md === md).slice(0, 2);
+  const dayLaunches = useRemote('onthisday-v1', ON_THIS_DAY_URL, 12 * HOUR, parseOnThisDay).data;
+  const fallback = facts.length === 0 ? dayLaunches?.[md] : undefined;
 
   const live = useRemote('stats-v2', STATS_URL, 6 * HOUR, parseStats).data;
   const sample = COUNTRY_STATS[who ?? 'World'];
@@ -110,7 +112,16 @@ export default function HistoryScreen() {
               </View>
             </View>
           ))}
-          {facts.length === 0 && <Text style={styles.factText}>Nothing on record for this day yet.</Text>}
+          {facts.length === 0 && fallback && (
+            <View style={{ gap: 3 }}>
+              <Text style={styles.factText}>{`${fallback.rocket} launched ${fallback.mission}`}</Text>
+              <View style={styles.row6}>
+                <Flag country={fallback.country} width={18} />
+                <Text style={styles.small}>{`${fallback.country} ${fallback.year}`}</Text>
+              </View>
+            </View>
+          )}
+          {facts.length === 0 && !fallback && <Text style={styles.factText}>Nothing on record for this day yet.</Text>}
         </View>
       </View>
 

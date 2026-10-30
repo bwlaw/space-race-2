@@ -27,3 +27,11 @@ export function launchStat(stats: Stats | null, period: Period, c: Country): [nu
   if (!live) return sample;
   return [live.launches, live.successRate ?? sample[1], (period !== 'allTime' && live.rocket) || sample[2]];
 }
+
+/** Latest successful launch for each calendar day (MM-DD), from the nightly job. */
+export const ON_THIS_DAY_URL = 'https://raw.githubusercontent.com/bwlaw/space-race-2/main/data/onthisday.json';
+export type DayLaunch = { year: number; country: Country; rocket: string; mission: string };
+export function parseOnThisDay(raw: unknown): Record<string, DayLaunch> {
+  if (!raw || typeof raw !== 'object') throw new Error('Bad data');
+  return raw as Record<string, DayLaunch>;
+}

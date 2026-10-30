@@ -106,6 +106,19 @@ async function main() {
       a.rockets[rocket] = (a.rockets[rocket] ?? 0) + 1;
     }
   }
+  // Fallback for the "On this day" card: the latest successful launch on each calendar day.
+  const onThisDay = {};
+  for (const l of recent) {
+    const c = countryFromCode(l.pad?.country?.alpha_3_code ?? l.pad?.location?.country?.alpha_3_code);
+    if (!c || l.status?.abbrev !== 'Success') continue;
+    const d = new Date(l.net);
+    const md = `${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    const year = d.getUTCFullYear();
+    if (!onThisDay[md] || onThisDay[md].year <= year) {
+      onThisDay[md] = { year, country: c, rocket: l.rocket?.configuration?.name ?? 'Rocket', mission: l.mission?.name ?? l.name ?? 'a mission' };
+    }
+  }
+
   const finish = (p) =>
     Object.fromEntries(
       COUNTRIES.map((c) => {
@@ -124,6 +137,7 @@ async function main() {
   };
   await mkdir('data', { recursive: true });
   await writeFile('data/stats.json', `${JSON.stringify(stats, null, 2)}\n`);
+  await writeFile('data/onthisday.json', `${JSON.stringify(onThisDay, null, 1)}\n`);
   console.log('Wrote data/stats.json');
 }
 
