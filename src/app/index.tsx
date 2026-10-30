@@ -14,6 +14,12 @@ import { HOUR, MINUTE, useRemote } from '@/lib/remote';
 import { launchStat, parseStats, STATS_URL } from '@/lib/stats';
 import { FIVE_YEAR_START, milestonePoints, milestoneRows, standings, type Metric, type Period } from '@/lib/race';
 
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+};
+
 export default function RaceScreen() {
   const [metric, setMetric] = useState<Metric>('milestones');
   const [period, setPeriod] = useState<Period>('allTime');
@@ -56,7 +62,7 @@ export default function RaceScreen() {
 
   const reachedCount = (c: Country) => list.filter((r) => r.countries.includes(c)).length;
   const note = !isMiles
-    ? (isAll ? 'The lanes count orbital launch attempts since 1957.' : `The lanes count orbital launch attempts${periodWords}.`) + (pick === 'Russia' ? ' Russia includes the Soviet Union.' : '') + (stats ? ` Launch counts updated ${new Date(stats.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}.` : ' Launch counts are still sample figures; the latest launches are live.')
+    ? (isAll ? 'The lanes count orbital launch attempts since 1957.' : `The lanes count orbital launch attempts${periodWords}.`) + (pick === 'Russia' ? ' Russia includes the Soviet Union.' : '') + (stats ? ` Launch counts updated ${formatDate(stats.updated)}.` : ' Launch counts are still sample figures; the latest launches are live.')
     : period === 'last12'
       ? pick ? `${RECENT_HIGHLIGHTS.filter((h) => h.reachedBy.some(([c]) => c === pick)).length} highlights in the last 12 months.` : 'Highlights from the last 12 months. Each one adds its points to the lanes above.'
       : isFive
