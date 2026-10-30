@@ -59,7 +59,7 @@ export default function HistoryScreen() {
   const md = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const facts = DAY_FACTS.filter((f) => f.md === md).slice(0, 2);
 
-  const live = useRemote('stats-v1', STATS_URL, 6 * HOUR, parseStats).data;
+  const live = useRemote('stats-v2', STATS_URL, 6 * HOUR, parseStats).data;
   const sample = COUNTRY_STATS[who ?? 'World'];
   const liveLaunch = live ? (who ? live.periods.allTime[who] : live.world) : null;
   const stats: [number, number, number, number, number] = [liveLaunch?.launches ?? sample[0], liveLaunch?.successRate ?? sample[1], liveLaunch?.crewed ?? sample[2], liveLaunch?.astronauts ?? sample[3], sample[4]];
