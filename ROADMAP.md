@@ -28,6 +28,17 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
 - History: satellites in orbit per country over time.
 - Data: CelesTrak satellite catalogue and constellation groups via the nightly job.
 
+## 1.4 – Links and Time Machine playback (target: mid-January 2027)
+- Official website for every mission, lander, rover, orbiter, launch site and station:
+  - shown as a "Official site ↗" link at the bottom of each info card and dropdown, opening in the in-app browser;
+  - agency pages from NASA, ESA, CNSA, ISRO, JAXA and Roscosmos where they exist;
+  - for Soviet-era and ended missions without their own page, NASA's spacecraft archive (NSSDCA) as the official fallback;
+  - every link checked by hand before release, and checked again automatically by the nightly job.
+- History, Time Machine: play button next to the year.
+  - Plays from the selected year to today (from 1957 if already at the end), about 0.4 seconds per year.
+  - Bars and the milestone list update as it runs; tap again to pause; dragging the slider stops playback.
+  - Respects the system "Reduce Motion" setting by moving in larger steps.
+
 ## Later ideas
 - Launches by company (SpaceX, Rocket Lab, Arianespace, CASC, …).
 - Re-enable "Last 12 months" for milestones once there is real data for it.
