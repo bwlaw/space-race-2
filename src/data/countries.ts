@@ -11,10 +11,3 @@ export const FLAGS: Record<Country, number> = {
   India: require('@/assets/images/flags/india.png'),
   Japan: require('@/assets/images/flags/japan.png'),
 };
-
-/** Flags for crew nationalities outside the six race countries, keyed by ISO alpha-3 code. */
-export const EXTRA_FLAGS: Record<string, number> = {
-  CAN: require('@/assets/images/flags/canada.png'),
-  ARE: require('@/assets/images/flags/uae.png'),
-  NZL: require('@/assets/images/flags/newzealand.png'),
-};
