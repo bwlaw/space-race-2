@@ -67,7 +67,7 @@ export default function LaunchesScreen() {
   const isNext = top && top.id === list[0]?.id;
 
   const pickFilter = (c: Country | null) => {
-    setFilter(c);
+    setFilter(c === filter ? null : c);
     setPicked(null);
   };
   const open = (url?: string) => {

@@ -1,4 +1,5 @@
-import type { ReactNode, Ref } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { useNavigation } from 'expo-router';
 import { Image } from 'expo-image';
 import { ScrollView, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,13 +9,23 @@ import type { LoadState } from '@/lib/remote';
 
 const STARS = require('@/assets/images/scenes/starfield.png');
 
-export function Screen({ title, right, children, scrollRef }: { title: string; right?: ReactNode; children: ReactNode; scrollRef?: Ref<ScrollViewInstance> }) {
+export function Screen({ title, right, children }: { title: string; right?: ReactNode; children: ReactNode }) {
   const insets = useSafeAreaInsets();
+  const scroll = useRef<ScrollViewInstance>(null);
+  const navigation = useNavigation();
+
+  // Tapping the tab icon of the screen you're on scrolls back to the top.
+  useEffect(() => {
+    const off = navigation.addListener('tabPress' as never, () => {
+      if (navigation.isFocused()) scroll.current?.scrollTo({ y: 0, animated: true });
+    });
+    return off;
+  }, [navigation]);
   return (
     <View style={styles.bg}>
       <Image source={STARS} contentFit="cover" style={styles.fill} accessible={false} />
       <ScrollView
-        ref={scrollRef}
+        ref={scroll}
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + BottomTabInset + 24 }]}>
         <View style={styles.header}>

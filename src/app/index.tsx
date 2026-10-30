@@ -49,7 +49,7 @@ export default function RaceScreen() {
 
   const periodWords = isAll ? '' : isFive ? ' in last 5 years' : ' in last 12 months';
   const title = !isMiles
-    ? pick ? `${pick} launches` : isAll ? 'All-time launches' : `Launches${periodWords}`
+    ? pick ? `${pick} launches` : isAll ? 'Total launches' : `Launches${periodWords}`
     : pick
       ? period === 'last12' ? `${pick}${periodWords}` : `${pick}: ${totals[pick]} points`
       : isAll ? 'Milestones' : `Milestones${periodWords}`;
