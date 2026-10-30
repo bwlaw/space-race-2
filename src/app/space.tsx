@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   hero: { height: 200, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: C.line, backgroundColor: '#050E24' },
   heroText: { position: 'absolute', left: 18, top: 16 },
-  count: { fontSize: 72, lineHeight: 80, fontWeight: '700', color: C.text, fontVariant: ['tabular-nums'] },
+  count: { fontFamily: F.display, fontSize: 72, lineHeight: 76, color: C.text, fontVariant: ['tabular-nums'] },
   countLabel: { fontSize: 15, color: '#CFE3FF' },
   tally: { position: 'absolute', left: 18, bottom: 14, flexDirection: 'row', gap: 6 },
   tallyChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingLeft: 4, paddingRight: 8, paddingVertical: 3, borderRadius: 999, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(6,18,43,0.8)' },
