@@ -60,7 +60,17 @@ export function LaunchStatsTable({ rows }: { rows: { country: Country; count: nu
   );
 }
 
-export function LaunchCard({ country, rocket, mission, when, success }: { country: Country; rocket: string; mission: string; when: string; success: boolean }) {
+/** Launch Library status → label and colour. Only a confirmed failure is shown as "Failure". */
+function outcome(status: string): { label: string; tone: 'ok' | 'fail' | 'partial' | 'pending' } {
+  if (status === 'Success') return { label: 'Success', tone: 'ok' };
+  if (status === 'Failure') return { label: 'Failure', tone: 'fail' };
+  if (status === 'Partial Failure') return { label: 'Partial failure', tone: 'partial' };
+  if (status === 'In Flight') return { label: 'In flight', tone: 'pending' };
+  return { label: 'Awaiting result', tone: 'pending' };
+}
+
+export function LaunchCard({ country, rocket, mission, when, status }: { country: Country; rocket: string; mission: string; when: string; status: string }) {
+  const o = outcome(status);
   return (
     <View style={[styles.card, { alignItems: 'center' }]}>
       <Flag country={country} width={33} label />
@@ -69,7 +79,7 @@ export function LaunchCard({ country, rocket, mission, when, success }: { countr
         <Text style={styles.small}>{mission}</Text>
       </View>
       <View style={{ alignItems: 'flex-end', gap: 4 }}>
-        <Text style={[styles.outcome, success ? styles.ok : styles.fail]}>{success ? 'Success' : 'Failure'}</Text>
+        <Text style={[styles.outcome, styles[o.tone]]}>{o.label}</Text>
         <Text style={styles.small}>{when}</Text>
       </View>
     </View>
@@ -97,4 +107,6 @@ const styles = StyleSheet.create({
   outcome: { fontSize: 12, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
   ok: { backgroundColor: 'rgba(61,220,151,0.15)', color: C.green },
   fail: { backgroundColor: 'rgba(255,107,107,0.15)', color: C.red },
+  partial: { backgroundColor: 'rgba(255,159,67,0.15)', color: C.orangeSoft },
+  pending: { backgroundColor: 'rgba(90,176,255,0.15)', color: C.sky },
 });

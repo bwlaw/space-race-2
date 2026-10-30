@@ -51,7 +51,7 @@ export default function RaceScreen() {
     .filter((l) => !pick || l.country === pick)
     .sort((a, b) => b.net - a.net)
     .slice(0, 5)
-    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), success: l.status === 'Success' }));
+    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), status: l.status }));
 
   const periodWords = isAll ? '' : isFive ? ' in last 5 years' : ' in last 12 months';
   const title = !isMiles
