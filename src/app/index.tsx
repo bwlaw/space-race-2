@@ -31,7 +31,7 @@ export default function RaceScreen() {
   const totals = useMemo(() => milestonePoints(period === 'last12' ? 'allTime' : period), [period]);
   const isFive = period === 'last5';
   const list = useMemo(() => milestoneRows(period, pick), [period, pick]);
-  const shown = more ? list : list.slice(0, 3);
+  const shown = more ? list : list.slice(0, 5);
 
   // "Last 12 months" is not available for milestones yet; fall back to the 5-year view.
   const changeMetric = (m: Metric) => { setMetric(m); setMore(false); if (m === 'milestones' && period === 'last12') setPeriod('last5'); };
@@ -99,12 +99,12 @@ export default function RaceScreen() {
       {isMiles ? (
         <View style={{ gap: 8 }}>
           {shown.map((r) => <MilestoneCard key={r.name} row={r} />)}
-          {list.length > 3 && (
+          {list.length > 5 && (
             <Pressable onPress={() => setMore(!more)} accessibilityRole="button" accessibilityState={{ expanded: more }} style={styles.moreBtn}>
               <Text style={styles.moreText}>{more ? 'Show fewer' : 'Show more milestones'}</Text>
             </Pressable>
           )}
-          {more && isAll && !pick && (
+          {!pick && (
             <View style={{ gap: 8, marginTop: 8 }}>
               <Text style={styles.h2} accessibilityRole="header">Still up for grabs</Text>
               <Text style={styles.note}>No country has done these yet. The first to get there scores the points.</Text>

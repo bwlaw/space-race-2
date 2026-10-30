@@ -53,7 +53,7 @@ function Ring({ percent }: { percent: number }) {
 export default function HistoryScreen() {
   const [who, setWho] = useState<Country | null>(null);
   const [year, setYear] = useState(1971);
-  const [aboutOpen, setAboutOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(true);
 
   const today = new Date();
   const md = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
