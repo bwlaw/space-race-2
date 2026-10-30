@@ -20,6 +20,11 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
 ## 1.3 – Satellites (target: early January 2027)
 - Space Race: third metric "Satellites" with tabs Countries | Companies (SpaceX Starlink, Eutelsat OneWeb, Amazon Kuiper, Planet, Qianfan, Spire, Iridium, other companies).
 - Maps, Earth: satellites layer with selected satellites at live positions (Hubble, weather, GPS, Galileo, BeiDou, GLONASS).
+  - The three buttons below the Earth map become ISS | Tiangong | Satellites ("Both" is replaced).
+  - Each button switches its layer on or off independently, so any combination can be shown.
+  - While Satellites is on, the launch-site dots are hidden on the map.
+  - Below the map: Launch Sites sorted by number of launches (busiest first) and showing the top 5 by default, with a "Show more launch sites" button for the rest, followed by a new list of the most important satellites.
+  - Launch counts per site come from Launch Library 2 via the nightly job, so the order stays current.
 - History: satellites in orbit per country over time.
 - Data: CelesTrak satellite catalogue and constellation groups via the nightly job.
 
