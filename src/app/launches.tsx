@@ -59,7 +59,14 @@ export default function LaunchesScreen() {
   const [showAll, setShowAll] = useState(false);
 
   // Launches stay listed until they have lifted off.
-  const upcoming = useMemo(() => (data ?? []).filter((l) => l.net > now - 60000).sort((a, b) => a.net - b.net), [data, now]);
+  const upcoming = useMemo(
+    () =>
+      (data ?? [])
+        .filter((l) => l.net > now - 60000)
+        .map((l) => ({ ...l, mission: l.mission.replace(/\s+(TBD|TBC)$/i, '').trim() || 'Mission' }))
+        .sort((a, b) => a.net - b.net),
+    [data, now],
+  );
   const list = useMemo(() => upcoming.filter((l) => !filter || l.country === filter), [upcoming, filter]);
   const top = list.find((l) => l.id === picked) ?? list[0];
 
