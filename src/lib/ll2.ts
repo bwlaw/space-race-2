@@ -71,7 +71,8 @@ export function parseLaunches(raw: unknown): Launch[] {
     out.push({
       id: l.id,
       rocket: l.rocket?.configuration?.name ?? 'Rocket',
-      mission: l.mission?.name ?? 'Mission',
+      // Launch Library uses placeholders like "Group TBD" until the batch number is known.
+      mission: (l.mission?.name ?? 'Mission').replace(/\s+(TBD|TBC)$/i, '').trim() || 'Mission',
       site: (l.pad?.location?.name ?? l.pad?.name ?? '').split(',')[0],
       net: Date.parse(l.net),
       status: l.status?.abbrev ?? 'TBD',
