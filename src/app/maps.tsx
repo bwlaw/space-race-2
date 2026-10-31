@@ -247,7 +247,12 @@ export default function MapsScreen() {
           </View>
         </Pressable>
       ) : (
-      <View style={[styles.info, { borderColor: info.color }]}>
+      <Pressable
+        onPress={() => setSel(null)}
+        disabled={!place && !orbiter}
+        accessibilityRole={place || orbiter ? 'button' : undefined}
+        accessibilityHint={place || orbiter ? 'Closes this card' : undefined}
+        style={[styles.info, { borderColor: info.color }]}>
         <View style={{ flex: 1, gap: 3 }}>
           <View style={styles.infoFlags}>
             {info.countries.map((c) => <Flag key={c} country={c} width={27} label />)}
@@ -258,7 +263,7 @@ export default function MapsScreen() {
           <Text style={styles.inUse}>{info.inUse}</Text>
           <Text style={styles.infoNote}>{info.note}</Text>
         </View>
-      </View>
+      </Pressable>
       )}
 
       {isEarth && (

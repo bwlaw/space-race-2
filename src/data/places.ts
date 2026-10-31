@@ -84,7 +84,7 @@ export const STATIONS: Record<'ISS' | 'Tiangong', InfoCard> = {
     countries: ['China'],
     kind: 'Space station, about 390 km up',
     inUse: 'In orbit since 2021',
-    note: 'China’s own station with three modules. Crews of three arrive on Shenzhou spacecraft.',
+    note: 'China’s own station with three modules. Crews of three arrive on Shenzhou spacecraft, and like the ISS it circles Earth about 16 times a day.',
   },
 };
 
