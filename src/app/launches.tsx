@@ -14,6 +14,7 @@ import type { Country } from '@/data/countries';
 import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { useReminders } from '@/lib/reminders';
 import { MINUTE, useRemote } from '@/lib/remote';
+import { dateTime } from '@/lib/time';
 
 const PAD = require('@/assets/images/scenes/launch-pad.png');
 
@@ -96,6 +97,7 @@ export default function LaunchesScreen() {
               <Text style={styles.heroRocket} numberOfLines={2}>{top.rocket}</Text>
               <Text style={styles.heroLine} numberOfLines={2}>{top.mission}</Text>
               <Text style={styles.heroLine} numberOfLines={1}>{top.site}</Text>
+              <Text style={styles.heroTime}>{dateTime(top.net, true)}</Text>
             </View>
             {top.stream && (
               <Pressable onPress={() => open(top.stream)} accessibilityRole="link" style={styles.live}>
@@ -163,6 +165,7 @@ export default function LaunchesScreen() {
               <View style={{ alignItems: 'flex-end', gap: 4 }}>
                 <Text style={[styles.status, statusStyle(l.status)]}>{l.status}</Text>
                 <Text style={styles.small}>{relative(l.net, now)}</Text>
+                <Text style={styles.tiny}>{dateTime(l.net)}</Text>
               </View>
             </Pressable>
           );
@@ -187,6 +190,8 @@ const styles = StyleSheet.create({
   heroLabel: { fontSize: 13, color: '#CFE3FF', flexShrink: 1 },
   heroRocket: { fontFamily: F.display, fontSize: 24, color: C.text },
   heroLine: { fontSize: 13, color: '#CFE3FF' },
+  heroTime: { fontSize: 13, fontWeight: '600', color: C.skySoft },
+  tiny: { fontSize: 11, color: C.muted },
   live: { position: 'absolute', top: 14, right: 14, height: 36, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: C.sky, backgroundColor: 'rgba(6,18,43,0.85)', flexDirection: 'row', alignItems: 'center', gap: 6 },
   liveText: { fontSize: 13, fontWeight: '600', color: C.text },
   countRow: { position: 'absolute', left: 14, right: 14, bottom: 14, flexDirection: 'row', gap: 6 },

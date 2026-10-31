@@ -71,7 +71,7 @@ function outcome(status: string): { label: string; tone: 'ok' | 'fail' | 'partia
   return { label: 'Awaiting result', tone: 'pending' };
 }
 
-export function LaunchCard({ country, rocket, mission, when, status, stream }: { country: Country; rocket: string; mission: string; when: string; status: string; stream?: string }) {
+export function LaunchCard({ country, rocket, mission, when, status, stream, at }: { country: Country; rocket: string; mission: string; when: string; status: string; stream?: string; at?: string }) {
   const o = outcome(status);
   return (
     <View style={[styles.card, { alignItems: 'center' }]}>
@@ -91,6 +91,7 @@ export function LaunchCard({ country, rocket, mission, when, status, stream }: {
       <View style={{ alignItems: 'flex-end', gap: 4 }}>
         <Text style={[styles.outcome, styles[o.tone]]}>{o.label}</Text>
         <Text style={styles.small}>{when}</Text>
+        {at && <Text style={styles.tiny}>{at}</Text>}
       </View>
     </View>
   );

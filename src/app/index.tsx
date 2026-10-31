@@ -10,6 +10,7 @@ import { C, F } from '@/constants/theme';
 import { COUNTRIES, type Country } from '@/data/countries';
 import { FUTURE_MILESTONES, MILESTONES, RECENT_HIGHLIGHTS } from '@/data/race';
 import { parseLaunches, PREVIOUS_URL, relative } from '@/lib/ll2';
+import { dateTime } from '@/lib/time';
 import { HOUR, MINUTE, useRemote } from '@/lib/remote';
 import { launchStat, parseStats, STATS_URL } from '@/lib/stats';
 import { FIVE_YEAR_START, milestonePoints, milestoneRows, standings, type Metric, type Period } from '@/lib/race';
@@ -52,7 +53,7 @@ export default function RaceScreen() {
     .filter((l) => !pick || l.country === pick)
     .sort((a, b) => b.net - a.net)
     .slice(0, 10)
-    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), status: l.status, stream: l.stream }));
+    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), status: l.status, stream: l.stream, at: dateTime(l.net) }));
 
   const periodWords = isAll ? '' : isFive ? ' in last 5 years' : ' in last 12 months';
   const title = !isMiles
