@@ -49,7 +49,7 @@ function BellIcon({ filled }: { filled: boolean }) {
 const statusStyle = (s: string) => (s === 'Go' ? styles.go : s === 'TBC' ? styles.tbc : s === 'Hold' ? styles.hold : styles.tbd);
 
 export default function LaunchesScreen() {
-  const { data, state } = useRemote('ll2-upcoming-v2', UPCOMING_URL, 15 * MINUTE, parseLaunches);
+  const { data, state } = useRemote('ll2-upcoming-v2', UPCOMING_URL, 30 * MINUTE, parseLaunches);
   const now = useNow(1000);
   const [filter, setFilter] = useState<Country | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
@@ -165,7 +165,6 @@ export default function LaunchesScreen() {
               <View style={{ alignItems: 'flex-end', gap: 4 }}>
                 <Text style={[styles.status, statusStyle(l.status)]}>{l.status}</Text>
                 <Text style={styles.small}>{relative(l.net, now)}</Text>
-                <Text style={styles.tiny}>{dateTime(l.net)}</Text>
               </View>
             </Pressable>
           );

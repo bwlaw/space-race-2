@@ -12,6 +12,7 @@ type Entry<T> = { at: number; data: T };
 export function useRemote<T>(key: string, url: string, ttlMs: number, parse: (raw: unknown) => T, asText = false) {
   const [data, setData] = useState<T | null>(null);
   const [state, setState] = useState<LoadState>('loading');
+  const [savedAt, setSavedAt] = useState<number | null>(null);
   const parseRef = useRef(parse);
 
   useEffect(() => {
@@ -30,7 +31,8 @@ export function useRemote<T>(key: string, url: string, ttlMs: number, parse: (ra
       }
       if (saved && alive) {
         setData(saved.data);
-        setState(Date.now() - saved.at < ttlMs ? 'live' : 'saved');
+        setSavedAt(saved.at);
+        setState(Date.now() - saved.at < Math.max(ttlMs, 3 * 60 * 60 * 1000) ? 'live' : 'saved');
         if (Date.now() - saved.at < ttlMs) return;
       }
       try {
@@ -40,10 +42,12 @@ export function useRemote<T>(key: string, url: string, ttlMs: number, parse: (ra
         const parsed = parseRef.current(raw);
         if (!alive) return;
         setData(parsed);
+        setSavedAt(Date.now());
         setState('live');
         AsyncStorage.setItem(key, JSON.stringify({ at: Date.now(), data: parsed })).catch(() => undefined);
       } catch {
-        if (alive) setState(saved ? 'saved' : 'error');
+        // A recent copy still counts as live: the free API sometimes refuses requests for a while.
+        if (alive) setState(saved ? (Date.now() - saved.at < 3 * 60 * 60 * 1000 ? 'live' : 'saved') : 'error');
       }
     })();
     return () => {
@@ -51,7 +55,7 @@ export function useRemote<T>(key: string, url: string, ttlMs: number, parse: (ra
     };
   }, [key, url, ttlMs, asText]);
 
-  return { data, state };
+  return { data, state, savedAt };
 }
 
 export const MINUTE = 60 * 1000;
