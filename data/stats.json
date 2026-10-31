@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T05:01:57.932Z",
+  "updated": "2026-10-31T04:59:38.449Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
@@ -29,7 +29,7 @@
         "astronauts": 77
       },
       "India": {
-        "launches": 105,
+        "launches": 106,
         "successRate": 86,
         "crewed": 0,
         "astronauts": 3
@@ -43,7 +43,7 @@
     },
     "last5": {
       "USA": {
-        "launches": 681,
+        "launches": 682,
         "successRate": 98,
         "rocket": "Falcon 9"
       },
@@ -63,9 +63,9 @@
         "rocket": "Vega-C"
       },
       "India": {
-        "launches": 26,
-        "successRate": 88,
-        "rocket": "PSLV-XL"
+        "launches": 27,
+        "successRate": 89,
+        "rocket": "GSLV Mk II"
       },
       "Japan": {
         "launches": 19,
@@ -75,7 +75,7 @@
     },
     "last12": {
       "USA": {
-        "launches": 169,
+        "launches": 170,
         "successRate": 99,
         "rocket": "Falcon 9"
       },
@@ -95,8 +95,8 @@
         "rocket": "Ariane 62"
       },
       "India": {
-        "launches": 5,
-        "successRate": 80,
+        "launches": 6,
+        "successRate": 83,
         "rocket": "LVM-3 (GSLV Mk III)"
       },
       "Japan": {
@@ -107,7 +107,7 @@
     }
   },
   "world": {
-    "launches": 7660,
+    "launches": 7661,
     "successRate": 93,
     "crewed": 374,
     "astronauts": 795
