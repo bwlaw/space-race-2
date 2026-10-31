@@ -42,13 +42,13 @@ export default function RootLayout() {
           <NativeTabs.Trigger.Label>Launch</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/launches.png')} renderingMode="template" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="space">
-          <NativeTabs.Trigger.Label>In Space</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/space.png')} renderingMode="template" />
-        </NativeTabs.Trigger>
         <NativeTabs.Trigger name="maps">
           <NativeTabs.Trigger.Label>Maps</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/maps.png')} renderingMode="template" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="space">
+          <NativeTabs.Trigger.Label>In Space</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/space.png')} renderingMode="template" />
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="history">
           <NativeTabs.Trigger.Label>History</NativeTabs.Trigger.Label>
