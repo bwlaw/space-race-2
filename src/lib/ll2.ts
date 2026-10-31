@@ -21,6 +21,9 @@ export function countryFromCode(code?: string | null): Country | null {
   return null;
 }
 
+/** Launch Library writes placeholders like "Group TBD?" until the batch number is known. */
+export const cleanMission = (name: string) => name.replace(/\s+(TBD|TBC)\??$/i, '').trim() || 'Mission';
+
 export type Launch = {
   id: string;
   rocket: string;
@@ -71,8 +74,7 @@ export function parseLaunches(raw: unknown): Launch[] {
     out.push({
       id: l.id,
       rocket: l.rocket?.configuration?.name ?? 'Rocket',
-      // Launch Library uses placeholders like "Group TBD" until the batch number is known.
-      mission: (l.mission?.name ?? 'Mission').replace(/\s+(TBD|TBC)$/i, '').trim() || 'Mission',
+      mission: cleanMission(l.mission?.name ?? 'Mission'),
       site: (l.pad?.location?.name ?? l.pad?.name ?? '').split(',')[0],
       net: Date.parse(l.net),
       status: l.status?.abbrev ?? 'TBD',

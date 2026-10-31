@@ -11,7 +11,7 @@ import { Section } from '@/components/section';
 import { LivePill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
 import type { Country } from '@/data/countries';
-import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
+import { cleanMission, parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { useReminders } from '@/lib/reminders';
 import { MINUTE, useRemote } from '@/lib/remote';
 import { dateTime } from '@/lib/time';
@@ -63,7 +63,7 @@ export default function LaunchesScreen() {
     () =>
       (data ?? [])
         .filter((l) => l.net > now - 60000)
-        .map((l) => ({ ...l, mission: l.mission.replace(/\s+(TBD|TBC)$/i, '').trim() || 'Mission' }))
+        .map((l) => ({ ...l, mission: cleanMission(l.mission) }))
         .sort((a, b) => a.net - b.net),
     [data, now],
   );
