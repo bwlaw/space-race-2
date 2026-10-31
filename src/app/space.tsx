@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
@@ -9,9 +9,11 @@ import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
 import type { Country } from '@/data/countries';
-import { STATION_NOTES, type Station } from '@/data/crew';
+import type { Station } from '@/data/crew';
+import { STATIONS } from '@/data/places';
 import { EXPEDITIONS_URL, parseExpeditions } from '@/lib/ll2';
 import { HOUR, useRemote } from '@/lib/remote';
+import { fixAt, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
 
 const ORBIT_ART = require('@/assets/images/scenes/orbit-bg.png');
 
@@ -32,6 +34,16 @@ export default function SpaceScreen() {
 
   const { data, state } = useRemote('ll2-crew', EXPEDITIONS_URL, HOUR, parseExpeditions);
   const [now] = useState(() => Date.now());
+  const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
+  const tgTle = useRemote('tle-tiangong', TLE_URLS.Tiangong, 6 * HOUR, parseTle, true);
+  const sat = useMemo(() => satrecFrom(station === 'ISS' ? issTle.data : tgTle.data), [station, issTle.data, tgTle.data]);
+  const [tick, setTick] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setTick(Date.now()), 3000);
+    return () => clearInterval(id);
+  }, []);
+  const fix = sat ? fixAt(sat, new Date(tick)) : null;
+  const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   const everyone = useMemo(() => data ?? [], [data]);
   const crew = everyone.filter((p) => p.station === station).sort((a, b) => a.lastFlight - b.lastFlight || b.totalDays - a.totalDays);
   const count = (s: Station) => everyone.filter((p) => p.station === s).length;
@@ -78,7 +90,16 @@ export default function SpaceScreen() {
         value={station}
         onChange={pickStation}
       />
-      <Text style={styles.note}>{STATION_NOTES[station]}</Text>
+      <View style={styles.stationCard}>
+        <View style={styles.stationFlags}>
+          {STATIONS[station].countries.map((c) => <Flag key={c} country={c} width={27} label />)}
+          {(STATIONS[station].codes ?? []).map((c) => <Flag key={c} country={null} code={c} width={27} label />)}
+        </View>
+        <Text style={styles.stationName}>{STATIONS[station].name}</Text>
+        <Text style={styles.stationUse}>{STATIONS[station].inUse}</Text>
+        <Text style={styles.stationNote}>{STATIONS[station].note}</Text>
+        <Text style={styles.stationLive}>{fix ? `Right now: ${fmt(fix.altKm)} km up, ${fmt(fix.speedKmh)} km/h` : STATIONS[station].kind}</Text>
+      </View>
 
       <View style={{ gap: 8 }}>
         {crew.map((p, i) => {
@@ -149,6 +170,12 @@ const styles = StyleSheet.create({
   days: { fontFamily: F.display, fontSize: 17, color: C.sky },
   tiny: { fontSize: 11, color: C.muted },
   credit: { fontSize: 11, color: C.dim },
+  stationCard: { borderWidth: 1, borderColor: C.sky, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: 'rgba(13,33,71,0.9)', gap: 3 },
+  stationFlags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 4 },
+  stationName: { fontSize: 16, fontWeight: '600', color: C.text },
+  stationUse: { fontSize: 13, fontWeight: '600', color: C.skySoft },
+  stationNote: { fontSize: 13, lineHeight: 19, color: C.text },
+  stationLive: { fontSize: 13, fontWeight: '600', color: C.green, marginTop: 4 },
   details: { flexDirection: 'row', gap: 8 },
   detail: { flex: 1, borderRadius: 10, padding: 8, backgroundColor: 'rgba(6,18,43,0.7)' },
   detailValue: { fontSize: 14, fontWeight: '600', color: C.text },

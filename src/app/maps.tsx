@@ -9,9 +9,11 @@ import type { Country } from '@/data/countries';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
-import { BODY_INFO, BODY_STATS, MARS_ORBITERS, PLACES, STATIONS, type Body } from '@/data/places';
+import { BODY_INFO, BODY_STATS, MARS_ORBITERS, PLACES, type Body } from '@/data/places';
+import { GENERAL_FACTS, SITE_FACTS, siteFor } from '@/data/site-facts';
+import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
-import { HOUR, useRemote } from '@/lib/remote';
+import { HOUR, MINUTE, useRemote } from '@/lib/remote';
 import { fixAt, groundTrack, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
 
 type Orbit = 'ISS' | 'Tiangong' | 'Both';
@@ -88,6 +90,7 @@ export default function MapsScreen() {
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
   const now = useNow(2000);
+  const upcoming = useRemote('ll2-upcoming-v2', UPCOMING_URL, 30 * MINUTE, parseLaunches);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
   const tgTle = useRemote('tle-tiangong', TLE_URLS.Tiangong, 6 * HOUR, parseTle, true);
   const issSat = useMemo(() => satrecFrom(issTle.data), [issTle.data]);
@@ -112,15 +115,16 @@ export default function MapsScreen() {
   const stationSel = (sel === 'ISS' && showIss) || (sel === 'Tiangong' && showTg) ? (sel as 'ISS' | 'Tiangong') : null;
   const place = places.find((p) => p.name === sel) ?? null;
   const curKey = stationSel ?? orbiter?.key ?? place?.name ?? null;
-  const info = stationSel
-    ? { ...STATIONS[stationSel], color: ORBITS[stationSel].color }
-    : place
+  // With nothing selected, the Earth card shows the next launch and a fact about its site.
+  const nextLaunch = isEarth ? (upcoming.data ?? []).filter((l) => l.net > now).sort((a, b) => a.net - b.net).map((l) => ({ l, site: siteFor(l.site) })).find((x) => x.site) ?? null : null;
+  const nextPlace = nextLaunch ? PLACES.Earth.find((p) => p.name === nextLaunch.site) ?? null : null;
+  const fact = nextLaunch?.site ? SITE_FACTS[nextLaunch.site] : GENERAL_FACTS[Math.floor(now / 86400000) % GENERAL_FACTS.length];
+  const showNext = isEarth && !place;
+  const info = place
       ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
       : orbiter
         ? { ...orbiter, color: C.sky }
-      : isEarth
-        ? { ...STATIONS.ISS, color: ORBITS.ISS.color }
-        : { ...BODY_INFO[body as 'Moon' | 'Mars'], color: cardAccent };
+      : { ...BODY_INFO[body === 'Mars' ? 'Mars' : 'Moon'], color: cardAccent };
   const iss = issFix ? project(issFix.lon, issFix.lat) : stationAt(t - 180, ORBITS.ISS.inclination, ORBITS.ISS.offset);
   const tg = tgFix ? project(tgFix.lon, tgFix.lat) : stationAt(((t + 150) % 360) - 180, ORBITS.Tiangong.inclination, ORBITS.Tiangong.offset);
   const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -180,7 +184,8 @@ export default function MapsScreen() {
         </Svg>
         {places.map((p) => {
           const [x, y] = project(p.lon, p.lat);
-          const on = p.name === curKey;
+          const glow = !curKey && nextPlace?.name === p.name;
+          const on = p.name === curKey || glow;
           const size = on ? 16 : 12;
           return (
             <Pressable
@@ -188,7 +193,7 @@ export default function MapsScreen() {
               onPress={() => toggle(p.name)}
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`${p.name}, ${p.country ?? p.kind}`}
+              accessibilityLabel={`${p.name}, ${p.country ?? p.kind}${glow ? ', next launch' : ''}`}
               style={[styles.hit, { left: `${(x / MAP_W) * 100}%`, top: `${(y / MAP_H) * 100}%` }]}>
               <View
                 style={[
@@ -201,9 +206,9 @@ export default function MapsScreen() {
             </Pressable>
           );
         })}
-        {places.filter((p) => p.label !== false || p.name === curKey).map((p) => {
+        {places.filter((p) => p.label !== false || p.name === curKey || (!curKey && nextPlace?.name === p.name)).map((p) => {
           const [x, y] = project(p.lon, p.lat);
-          const on = p.name === curKey;
+          const on = p.name === curKey || (!curKey && nextPlace?.name === p.name);
           const top = `${((y + p.dy - 9) / MAP_H) * 100}%` as const;
           const pos =
             p.anchor === 'start'
@@ -217,14 +222,31 @@ export default function MapsScreen() {
             </Pressable>
           );
         })}
-        {showIss && (
-          <Pressable onPress={() => toggle('ISS')} accessibilityRole="button" accessibilityLabel="International Space Station" style={[styles.hit, styles.stationHit, { left: `${(iss[0] / MAP_W) * 100}%`, top: `${(iss[1] / MAP_H) * 100}%` }]} />
-        )}
-        {showTg && (
-          <Pressable onPress={() => toggle('Tiangong')} accessibilityRole="button" accessibilityLabel="Tiangong space station" style={[styles.hit, styles.stationHit, { left: `${(tg[0] / MAP_W) * 100}%`, top: `${(tg[1] / MAP_H) * 100}%` }]} />
-        )}
       </View>
 
+      {showNext ? (
+        <Pressable
+          onPress={() => nextPlace && setSel(nextPlace.name)}
+          accessibilityRole="button"
+          accessibilityHint="Opens the launch site on the map"
+          style={[styles.info, { borderColor: C.orange }]}>
+          <View style={{ flex: 1, gap: 3 }}>
+            {nextLaunch && nextPlace ? (
+              <>
+                <View style={styles.infoFlags}>
+                  <Flag country={nextPlace.country} code={nextPlace.code} width={27} label />
+                </View>
+                <Text style={styles.infoName}>{`Next launch ${relative(nextLaunch.l.net, now)}, from ${nextPlace.name}`}</Text>
+                <Text style={styles.small}>{`${nextLaunch.l.rocket}, ${nextLaunch.l.mission}`}</Text>
+              </>
+            ) : (
+              <Text style={styles.infoName}>{upcoming.state === 'loading' ? 'Loading the next launch…' : 'Launch sites'}</Text>
+            )}
+            <Text style={[styles.inUse, { marginTop: 4 }]}>{fact.title}</Text>
+            <Text style={styles.infoNote}>{fact.text}</Text>
+          </View>
+        </Pressable>
+      ) : (
       <View style={[styles.info, { borderColor: info.color }]}>
         <View style={{ flex: 1, gap: 3 }}>
           <View style={styles.infoFlags}>
@@ -237,6 +259,7 @@ export default function MapsScreen() {
           <Text style={styles.infoNote}>{info.note}</Text>
         </View>
       </View>
+      )}
 
       {isEarth && (
         <View style={styles.orbits}>
