@@ -16,7 +16,7 @@ import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps'
 import { HOUR, MINUTE, useRemote } from '@/lib/remote';
 import { fixAt, groundTrack, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
 
-type Orbit = 'ISS' | 'Tiangong' | 'Both';
+type Orbit = 'None' | 'ISS' | 'Tiangong' | 'Both';
 
 const MAP_IMAGES: Record<Body, number> = {
   Earth: require('@/assets/images/scenes/earth.png'),
@@ -85,7 +85,7 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
 
 export default function MapsScreen() {
   const [body, setBody] = useState<Body>('Earth');
-  const [orbit, setOrbit] = useState<Orbit>('Both');
+  const [orbit, setOrbit] = useState<Orbit>('None');
   const [sel, setSel] = useState<string | null>(null);
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
@@ -110,8 +110,8 @@ export default function MapsScreen() {
   const orbiters = useMemo(() => (isMars ? [...MARS_ORBITERS].sort((a, b) => b.year - a.year) : []), [isMars]);
   const orbiter = orbiters.find((o) => o.key === sel) ?? null;
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
-  const showIss = isEarth && orbit !== 'Tiangong';
-  const showTg = isEarth && orbit !== 'ISS';
+  const showIss = isEarth && (orbit === 'ISS' || orbit === 'Both');
+  const showTg = isEarth && (orbit === 'Tiangong' || orbit === 'Both');
   const stationSel = (sel === 'ISS' && showIss) || (sel === 'Tiangong' && showTg) ? (sel as 'ISS' | 'Tiangong') : null;
   const place = places.find((p) => p.name === sel) ?? null;
   const curKey = stationSel ?? orbiter?.key ?? place?.name ?? null;
@@ -132,9 +132,16 @@ export default function MapsScreen() {
     f
       ? [{ label: `${name} speed`, value: fmt(f.speedKmh), unit: 'km/h, live' }, { label: 'Altitude', value: fmt(f.altKm), unit: 'km, live' }, { label: 'Position', value: `${Math.abs(f.lat).toFixed(0)}°${f.lat >= 0 ? 'N' : 'S'}`, unit: `${Math.abs(f.lon).toFixed(0)}°${f.lon >= 0 ? 'E' : 'W'}` }]
       : null;
+  const siteCountries = new Set(PLACES.Earth.map((p) => p.country ?? p.code)).size;
   const stats = !isEarth
     ? BODY_STATS[body]
-    : orbit === 'ISS'
+    : orbit === 'None'
+      ? [
+          { label: 'Launch sites', value: String(PLACES.Earth.length), unit: 'on this map' },
+          { label: 'Countries', value: String(siteCountries), unit: 'with sites shown' },
+          { label: 'Next launch', value: nextLaunch ? relative(nextLaunch.l.net, now).replace(/^in /, '') : '–', unit: nextLaunch ? 'from now' : '' },
+        ]
+      : orbit === 'ISS'
       ? liveStats('ISS', issFix) ?? BODY_STATS.ISS
       : orbit === 'Tiangong'
         ? liveStats('Tiangong', tgFix) ?? BODY_STATS.Tiangong
@@ -143,15 +150,10 @@ export default function MapsScreen() {
           : BODY_STATS.Both;
   const toggle = (key: string) => setSel(sel === key ? null : key);
 
-  // Tapping a highlighted orbit button again clears it and shows both orbits without highlight.
+  // Each orbit button shows its layer; tapping the active button again hides the stations.
   const pickOrbit = (o: Orbit) => {
-    if (sel === o) {
-      setSel(null);
-      setOrbit('Both');
-      return;
-    }
-    setOrbit(o);
-    setSel(o);
+    setOrbit(orbit === o ? 'None' : o);
+    if (sel === 'ISS' || sel === 'Tiangong' || sel === 'Both') setSel(null);
   };
 
   const pickBody = (b: Body) => {
@@ -269,7 +271,7 @@ export default function MapsScreen() {
       {isEarth && (
         <View style={styles.orbits}>
           {(['ISS', 'Tiangong', 'Both'] as const).map((o) => {
-            const on = sel === o;
+            const on = orbit === o;
             return (
               <Pressable key={o} onPress={() => pickOrbit(o)} accessibilityRole="button" accessibilityState={{ selected: on }} style={[styles.orbitBtn, on ? styles.orbitOn : styles.orbitOff]}>
                 <View style={styles.orbitDot}>
