@@ -4,7 +4,7 @@ import type { Country } from '@/data/countries';
 const BASE = 'https://ll.thespacedevs.com/2.3.0';
 
 export const UPCOMING_URL = `${BASE}/launches/upcoming/?limit=40&mode=detailed&hide_recent_previous=true`;
-export const PREVIOUS_URL = `${BASE}/launches/previous/?limit=40&mode=normal`;
+export const PREVIOUS_URL = `${BASE}/launches/previous/?limit=40&mode=detailed`;
 export const EXPEDITIONS_URL = `${BASE}/expeditions/?is_active=true&mode=detailed&limit=20`;
 
 const EUROPE = new Set(['GUF', 'FRA', 'DEU', 'ITA', 'ESP', 'GBR', 'NLD', 'BEL', 'SWE', 'DNK', 'CHE', 'POL', 'HUN', 'CZE', 'AUT', 'NOR', 'PRT', 'FIN', 'IRL', 'GRC', 'ROU', 'LUX', 'EST', 'SVN', 'SVK', 'LTU', 'LVA', 'BGR', 'HRV']);

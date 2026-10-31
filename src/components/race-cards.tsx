@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
 import { C, F } from '@/constants/theme';
@@ -69,7 +71,7 @@ function outcome(status: string): { label: string; tone: 'ok' | 'fail' | 'partia
   return { label: 'Awaiting result', tone: 'pending' };
 }
 
-export function LaunchCard({ country, rocket, mission, when, status }: { country: Country; rocket: string; mission: string; when: string; status: string }) {
+export function LaunchCard({ country, rocket, mission, when, status, stream }: { country: Country; rocket: string; mission: string; when: string; status: string; stream?: string }) {
   const o = outcome(status);
   return (
     <View style={[styles.card, { alignItems: 'center' }]}>
@@ -77,6 +79,14 @@ export function LaunchCard({ country, rocket, mission, when, status }: { country
       <View style={{ flex: 1 }}>
         <Text style={styles.title}>{rocket}</Text>
         <Text style={styles.small}>{mission}</Text>
+        {stream && (
+          <Pressable onPress={() => WebBrowser.openBrowserAsync(stream)} accessibilityRole="link" hitSlop={8} style={styles.watch}>
+            <Svg width={12} height={12} viewBox="0 0 24 24">
+              <Path d="M7 4l13 8-13 8z" fill={C.sky} />
+            </Svg>
+            <Text style={styles.watchText}>Watch</Text>
+          </Pressable>
+        )}
       </View>
       <View style={{ alignItems: 'flex-end', gap: 4 }}>
         <Text style={[styles.outcome, styles[o.tone]]}>{o.label}</Text>
@@ -108,5 +118,7 @@ const styles = StyleSheet.create({
   ok: { backgroundColor: 'rgba(61,220,151,0.15)', color: C.green },
   fail: { backgroundColor: 'rgba(255,107,107,0.15)', color: C.red },
   partial: { backgroundColor: 'rgba(255,159,67,0.15)', color: C.orangeSoft },
+  watch: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3, alignSelf: 'flex-start' },
+  watchText: { fontSize: 13, fontWeight: '600', color: C.sky },
   pending: { backgroundColor: 'rgba(90,176,255,0.15)', color: C.sky },
 });

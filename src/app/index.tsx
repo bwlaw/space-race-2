@@ -26,7 +26,8 @@ export default function RaceScreen() {
   const [pick, setPick] = useState<Country | null>(null);
   const [more, setMore] = useState(false);
   const [run, setRun] = useState(0);
-  const recent = useRemote('ll2-previous', PREVIOUS_URL, 30 * MINUTE, parseLaunches);
+  const [moreLaunches, setMoreLaunches] = useState(false);
+  const recent = useRemote('ll2-previous-v2', PREVIOUS_URL, 30 * MINUTE, parseLaunches);
   const statsRemote = useRemote('stats-v2', STATS_URL, 6 * HOUR, parseStats);
   const stats = statsRemote.data;
   const [now] = useState(() => Date.now());
@@ -50,8 +51,8 @@ export default function RaceScreen() {
   const latest = (recent.data ?? [])
     .filter((l) => !pick || l.country === pick)
     .sort((a, b) => b.net - a.net)
-    .slice(0, 5)
-    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), status: l.status }));
+    .slice(0, 10)
+    .map((l) => ({ country: l.country, rocket: l.rocket, mission: l.mission, when: relative(l.net, now), status: l.status, stream: l.stream }));
 
   const periodWords = isAll ? '' : isFive ? ' in last 5 years' : ' in last 12 months';
   const title = !isMiles
@@ -122,7 +123,12 @@ export default function RaceScreen() {
         <View style={{ gap: 8 }}>
           <LaunchStatsTable rows={statRows} />
           <Text style={[styles.h2, { marginTop: 8 }]} accessibilityRole="header">Latest launches</Text>
-          {latest.map((l, i) => <LaunchCard key={`${l.rocket}-${i}`} {...l} />)}
+          {(moreLaunches ? latest : latest.slice(0, 5)).map((l, i) => <LaunchCard key={`${l.rocket}-${i}`} {...l} />)}
+          {latest.length > 5 && (
+            <Pressable onPress={() => setMoreLaunches(!moreLaunches)} accessibilityRole="button" accessibilityState={{ expanded: moreLaunches }} style={styles.moreBtn}>
+              <Text style={styles.moreText}>{moreLaunches ? 'Show fewer' : 'Show more launches'}</Text>
+            </Pressable>
+          )}
           {latest.length === 0 && (
             <Text style={styles.note}>{recent.state === 'loading' ? 'Loading launches…' : recent.state === 'error' ? 'Latest launches could not be loaded.' : 'No recent launch for this country.'}</Text>
           )}
