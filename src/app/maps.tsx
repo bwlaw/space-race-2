@@ -116,7 +116,22 @@ export default function MapsScreen() {
   const place = places.find((p) => p.name === sel) ?? null;
   const curKey = stationSel ?? orbiter?.key ?? place?.name ?? null;
   // With nothing selected, the Earth card shows the next launch and a fact about its site.
-  const nextLaunch = isEarth ? (upcoming.data ?? []).filter((l) => l.net > now).sort((a, b) => a.net - b.net).map((l) => ({ l, site: siteFor(l.site) })).find((x) => x.site) ?? null : null;
+  // Launches from different sites within three days of the next one take turns, one per day.
+  const candidates = useMemo(() => {
+    if (!isEarth) return [];
+    const withSite = (upcoming.data ?? [])
+      .filter((l) => l.net > now)
+      .sort((a, b) => a.net - b.net)
+      .map((l) => ({ l, site: siteFor(l.site) }))
+      .filter((x): x is { l: (typeof x)['l']; site: string } => !!x.site);
+    if (!withSite.length) return [];
+    const first = withSite[0].l.net;
+    const seen = new Set<string>();
+    return withSite.filter((x) => x.l.net - first < 3 * 86400000 && !seen.has(x.site) && !!seen.add(x.site)).slice(0, 3);
+  }, [isEarth, upcoming.data, now]);
+  const dayIndex = Math.floor(now / 86400000);
+  const nextLaunch = candidates.length ? candidates[dayIndex % candidates.length] : null;
+  const isVeryNext = !!nextLaunch && nextLaunch === candidates[0];
   const nextPlace = nextLaunch ? PLACES.Earth.find((p) => p.name === nextLaunch.site) ?? null : null;
   const fact = nextLaunch?.site ? SITE_FACTS[nextLaunch.site] : GENERAL_FACTS[Math.floor(now / 86400000) % GENERAL_FACTS.length];
   const showNext = isEarth && !place;
@@ -139,7 +154,7 @@ export default function MapsScreen() {
       ? [
           { label: 'Launch sites', value: String(PLACES.Earth.length), unit: 'on this map' },
           { label: 'Countries', value: String(siteCountries), unit: 'with sites shown' },
-          { label: 'Next launch', value: nextLaunch ? relative(nextLaunch.l.net, now).replace(/^in /, '') : '–', unit: nextLaunch ? 'from now' : '' },
+          { label: 'Next launch', value: candidates[0] ? relative(candidates[0].l.net, now).replace(/^in /, '') : '–', unit: candidates[0] ? 'from now' : '' },
         ]
       : orbit === 'ISS'
       ? liveStats('ISS', issFix) ?? BODY_STATS.ISS
@@ -238,7 +253,7 @@ export default function MapsScreen() {
                 <View style={styles.infoFlags}>
                   <Flag country={nextPlace.country} code={nextPlace.code} width={27} label />
                 </View>
-                <Text style={styles.infoName}>{`Next launch from ${nextPlace.name}`}</Text>
+                <Text style={styles.infoName}>{`${isVeryNext ? 'Next launch' : 'Upcoming launch'} from ${nextPlace.name}`}</Text>
                 <Text style={styles.small}>{`${nextLaunch.l.rocket}, ${nextLaunch.l.mission}`}</Text>
               </>
             ) : (
