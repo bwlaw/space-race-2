@@ -14,6 +14,7 @@ import { GENERAL_FACTS, SITE_FACTS, siteFor } from '@/data/site-facts';
 import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
 import { HOUR, MINUTE, useRemote } from '@/lib/remote';
+import { dateTime } from '@/lib/time';
 import { fixAt, groundTrack, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
 
 type Orbit = 'None' | 'ISS' | 'Tiangong' | 'Both';
@@ -134,7 +135,13 @@ export default function MapsScreen() {
   const isVeryNext = !!nextLaunch && nextLaunch === candidates[0];
   const nextPlace = nextLaunch ? PLACES.Earth.find((p) => p.name === nextLaunch.site) ?? null : null;
   const fact = nextLaunch?.site ? SITE_FACTS[nextLaunch.site] : GENERAL_FACTS[Math.floor(now / 86400000) % GENERAL_FACTS.length];
-  const showNext = isEarth && !place;
+  // A selected launch site shows its own next launch; without one, its info card.
+  const siteLaunch = isEarth && place ? (upcoming.data ?? []).filter((l) => l.net > now && siteFor(l.site) === place.name).sort((a, b) => a.net - b.net)[0] ?? null : null;
+  const showNext = isEarth && (!place || !!siteLaunch);
+  const cardLaunch = place ? (siteLaunch ? { l: siteLaunch, site: place.name } : null) : nextLaunch;
+  const cardPlace = place ?? nextPlace;
+  const cardTitle = place ? 'Next launch' : isVeryNext ? 'Next launch' : 'Upcoming launch';
+  const cardFact = cardLaunch ? SITE_FACTS[cardLaunch.site] ?? fact : fact;
   const info = place
       ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
       : orbiter
@@ -243,24 +250,25 @@ export default function MapsScreen() {
 
       {showNext ? (
         <Pressable
-          onPress={() => nextPlace && setSel(nextPlace.name)}
+          onPress={() => (place ? setSel(null) : nextPlace && setSel(nextPlace.name))}
           accessibilityRole="button"
-          accessibilityHint="Opens the launch site on the map"
+          accessibilityHint={place ? 'Closes this card' : 'Opens the launch site on the map'}
           style={[styles.info, { borderColor: C.orange }]}>
           <View style={{ flex: 1, gap: 3 }}>
-            {nextLaunch && nextPlace ? (
+            {cardLaunch && cardPlace ? (
               <>
                 <View style={styles.infoFlags}>
-                  <Flag country={nextPlace.country} code={nextPlace.code} width={27} label />
+                  <Flag country={cardPlace.country} code={cardPlace.code} width={27} label />
                 </View>
-                <Text style={styles.infoName}>{`${isVeryNext ? 'Next launch' : 'Upcoming launch'} from ${nextPlace.name}`}</Text>
-                <Text style={styles.small}>{`${nextLaunch.l.rocket}, ${nextLaunch.l.mission}`}</Text>
+                <Text style={styles.infoName}>{`${cardTitle} from ${cardPlace.name}`}</Text>
+                <Text style={styles.small}>{`${cardLaunch.l.rocket}, ${cardLaunch.l.mission}`}</Text>
+                <Text style={styles.launchTime}>{`${dateTime(cardLaunch.l.net, true)}, ${relative(cardLaunch.l.net, now)}`}</Text>
               </>
             ) : (
               <Text style={styles.infoName}>{upcoming.state === 'loading' ? 'Loading the next launch…' : 'Launch sites'}</Text>
             )}
-            <Text style={[styles.inUse, { marginTop: 4 }]}>{fact.title}</Text>
-            <Text style={styles.infoNote}>{fact.text}</Text>
+            <Text style={[styles.inUse, { marginTop: 4 }]}>{cardFact.title}</Text>
+            <Text style={styles.infoNote}>{cardFact.text}</Text>
           </View>
         </Pressable>
       ) : (
@@ -366,6 +374,7 @@ const styles = StyleSheet.create({
   info: { minHeight: 168, flexDirection: 'row', gap: 12, alignItems: 'flex-start', borderWidth: 1, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: 'rgba(13,33,71,0.9)' },
   infoFlags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 4 },
   infoName: { fontSize: 16, fontWeight: '600', color: C.text },
+  launchTime: { fontSize: 13, fontWeight: '600', color: C.orangeSoft },
   inUse: { fontSize: 13, fontWeight: '600', color: C.skySoft },
   infoNote: { fontSize: 13, lineHeight: 19, color: C.text },
   small: { fontSize: 13, color: C.muted },
