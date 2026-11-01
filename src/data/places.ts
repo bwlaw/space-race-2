@@ -117,3 +117,18 @@ export const MARS_ORBITERS: (InfoCard & { key: string; country: Country | null; 
   { key: 'orb-hope', name: 'Hope', country: null, code: 'ARE', countries: [], codes: ['ARE'], sub: '2021', year: 2021, angle: 280, kind: 'Orbiter', inUse: 'In orbit since 2021', note: 'The United Arab Emirates’ weather satellite for the Martian atmosphere.' },
   { key: 'orb-tianwen', name: 'Tianwen-1', country: 'China', countries: ['China'], sub: '2021', year: 2021, angle: 325, kind: 'Orbiter', inUse: 'In orbit since 2021', note: 'Delivered the Zhurong rover and maps Mars from orbit.' },
 ];
+
+/** Spacecraft that orbit or have orbited the Moon: the active ones and the historic firsts. */
+export const MOON_ORBITERS: typeof MARS_ORBITERS = [
+  { key: 'moon-queqiao2', name: 'Queqiao-2', country: 'China', countries: ['China'], sub: '2024', year: 2024, angle: 0, kind: 'Relay orbiter', inUse: 'In orbit since 2024', note: 'Relays signals between Earth and landers on the Moon’s far side, which can never see Earth directly.' },
+  { key: 'moon-danuri', name: 'Danuri', country: null, code: 'KOR', countries: [], codes: ['KOR'], sub: '2022', year: 2022, angle: 0, kind: 'Orbiter', inUse: 'In orbit since 2022', note: 'South Korea’s first Moon mission, mapping the surface and searching for ice near the poles.' },
+  { key: 'moon-chandrayaan2', name: 'Chandrayaan-2 orbiter', country: 'India', countries: ['India'], sub: '2019', year: 2019, angle: 0, kind: 'Orbiter', inUse: 'In orbit since 2019', note: 'Still mapping the Moon after its lander, Vikram, was lost during its landing attempt.' },
+  { key: 'moon-artemis', name: 'ARTEMIS P1 and P2', country: 'USA', countries: ['USA'], sub: '2011', year: 2011, angle: 0, kind: 'Two orbiters', inUse: 'In orbit since 2011', note: 'Two probes moved from an Earth mission to the Moon, where they study the space environment around it.' },
+  { key: 'moon-lro', name: 'Lunar Reconnaissance Orbiter', country: 'USA', countries: ['USA'], sub: '2009', year: 2009, angle: 0, kind: 'Orbiter', inUse: 'In orbit since 2009', note: 'Maps the Moon in fine detail and has photographed the Apollo landing sites from orbit.' },
+  { key: 'moon-chandrayaan1', name: 'Chandrayaan-1', country: 'India', countries: ['India'], sub: '2008', year: 2008, angle: 0, kind: 'Orbiter', inUse: 'In orbit 2008–2009', note: 'India’s first Moon mission, which helped discover water molecules on the lunar surface.' },
+  { key: 'moon-change1', name: 'Chang’e 1', country: 'China', countries: ['China'], sub: '2007', year: 2007, angle: 0, kind: 'Orbiter', inUse: 'In orbit 2007–2009', note: 'China’s first Moon mission, which produced a complete map of the lunar surface.' },
+  { key: 'moon-kaguya', name: 'Kaguya', country: 'Japan', countries: ['Japan'], sub: '2007', year: 2007, angle: 0, kind: 'Orbiter', inUse: 'In orbit 2007–2009', note: 'Japan’s large lunar orbiter, which filmed Earth rising over the Moon in high definition.' },
+  { key: 'moon-smart1', name: 'SMART-1', country: 'Europe', countries: ['Europe'], sub: '2004', year: 2004, angle: 0, kind: 'Orbiter', inUse: 'In orbit 2004–2006', note: 'Europe’s first Moon mission, which reached the Moon with an ion engine.' },
+  { key: 'moon-lunarorbiter1', name: 'Lunar Orbiter 1', country: 'USA', countries: ['USA'], sub: '1966', year: 1966, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1966', note: 'The first of five US orbiters that photographed the Moon to find safe landing sites for Apollo.' },
+  { key: 'moon-luna10', name: 'Luna 10', country: 'Russia', countries: ['Russia'], sub: '1966', year: 1966, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1966', note: 'The first spacecraft ever to orbit the Moon, launched by the Soviet Union.' },
+];

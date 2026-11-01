@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Path, Polygon, Rect } from 'react-nativ
  * Every flag in the app, drawn as vector shapes (60 × 40 units).
  * No image files are involved, so flags can never fail to load.
  */
-export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL']);
+export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR']);
 
 export function FlagArt({ code, width, height }: { code: string; width: number; height: number }) {
   return (
@@ -135,6 +135,23 @@ export function FlagArt({ code, width, height }: { code: string; width: number; 
           <Polygon points="39.5,16.7 40.0,18.3 41.7,18.3 40.4,19.3 40.9,20.9 39.5,19.9 38.1,20.9 38.6,19.3 37.3,18.3 39.0,18.3" fill="#C8102E" stroke="#FFFFFF" strokeWidth={0.8} />
           <Polygon points="50.5,13.7 51.0,15.3 52.7,15.3 51.4,16.3 51.9,17.9 50.5,16.9 49.1,17.9 49.6,16.3 48.3,15.3 50.0,15.3" fill="#C8102E" stroke="#FFFFFF" strokeWidth={0.8} />
           <Polygon points="45.0,5.4 45.6,7.2 47.5,7.2 46.0,8.3 46.5,10.1 45.0,9.0 43.5,10.1 44.0,8.3 42.5,7.2 44.4,7.2" fill="#C8102E" stroke="#FFFFFF" strokeWidth={0.8} />
+        </>
+      )}
+      {code === 'KOR' && (
+        <>
+          <Rect width={60} height={40} fill="#FFFFFF" />
+          <G transform="rotate(33.7 30 20)">
+            <Path d="M20 20 A10 10 0 0 1 40 20 Z" fill="#CD2E3A" />
+            <Path d="M20 20 A10 10 0 0 0 40 20 Z" fill="#0047A0" />
+            <Circle cx={25} cy={20} r={5} fill="#CD2E3A" />
+            <Circle cx={35} cy={20} r={5} fill="#0047A0" />
+          </G>
+          <G stroke="#000000" strokeWidth={1.4}>
+            <Path d="M8 6 L14 2 M9 8 L15 4 M10 10 L16 6" />
+            <Path d="M44 30 L50 34 M45 28 L51 32 M46 26 L52 30" />
+            <Path d="M44 10 L50 6 M45 12 L51 8 M46 14 L52 10" />
+            <Path d="M8 34 L14 38 M9 32 L15 36 M10 30 L16 34" />
+          </G>
         </>
       )}
     </Svg>

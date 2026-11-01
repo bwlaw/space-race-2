@@ -9,7 +9,7 @@ import type { Country } from '@/data/countries';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
-import { BODY_INFO, BODY_STATS, MARS_ORBITERS, PLACES, type Body } from '@/data/places';
+import { BODY_INFO, BODY_STATS, MARS_ORBITERS, MOON_ORBITERS, PLACES, type Body } from '@/data/places';
 import { GENERAL_FACTS, SITE_FACTS, siteFor } from '@/data/site-facts';
 import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
@@ -108,7 +108,7 @@ export default function MapsScreen() {
   const isMars = body === 'Mars';
   const accent = isMars ? C.sky : C.orange;
   const cardAccent = body === 'Moon' ? C.sky : accent;
-  const orbiters = useMemo(() => (isMars ? [...MARS_ORBITERS].sort((a, b) => b.year - a.year) : []), [isMars]);
+  const orbiters = useMemo(() => [...(body === 'Mars' ? MARS_ORBITERS : body === 'Moon' ? MOON_ORBITERS : [])].sort((a, b) => b.year - a.year), [body]);
   const orbiter = orbiters.find((o) => o.key === sel) ?? null;
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
   const showIss = isEarth && (orbit === 'ISS' || orbit === 'Both');
@@ -190,7 +190,7 @@ export default function MapsScreen() {
       <View style={styles.map}>
         <Image source={MAP_IMAGES[body]} style={styles.fill} contentFit="contain" accessibilityLabel={`Map of ${body}`} />
         <Svg width="100%" height="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={StyleSheet.absoluteFill} pointerEvents="none">
-          {isMars && <Ellipse cx={175} cy={120} rx={172} ry={115} fill="none" stroke={C.sky} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 5" />}
+          {!isEarth && <Ellipse cx={175} cy={120} rx={172} ry={115} fill="none" stroke={C.sky} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 5" />}
           {showIss && <Path d={issTrack} fill="none" stroke={ORBITS.ISS.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showTg && <Path d={tgTrack} fill="none" stroke={ORBITS.Tiangong.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showIss && (
@@ -339,7 +339,7 @@ export default function MapsScreen() {
           />
         ))}
       </Section>
-      {isMars && (
+      {orbiters.length > 0 && (
         <Section title="Orbiters" count={orbiters.length} open={openOrbiters} onToggle={() => setOpenOrbiters(!openOrbiters)}>
           {orbiters.map((o) => (
             <ItemRow
