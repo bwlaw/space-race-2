@@ -262,13 +262,12 @@ export default function MapsScreen() {
                 </View>
                 <Text style={styles.infoName}>{`${cardTitle} from ${cardPlace.name}`}</Text>
                 <Text style={styles.small}>{`${cardLaunch.l.rocket}, ${cardLaunch.l.mission}`}</Text>
-                <Text style={styles.launchTime}>{`${dateTime(cardLaunch.l.net, true)}, ${relative(cardLaunch.l.net, now)}`}</Text>
+                <Text style={styles.launchTime}>{dateTime(cardLaunch.l.net, true)}</Text>
               </>
             ) : (
               <Text style={styles.infoName}>{upcoming.state === 'loading' ? 'Loading the next launch…' : 'Launch sites'}</Text>
             )}
-            <Text style={[styles.inUse, { marginTop: 4 }]}>{cardFact.title}</Text>
-            <Text style={styles.infoNote}>{cardFact.text}</Text>
+            <Text style={[styles.infoNote, { marginTop: 4 }]}>{cardFact.text}</Text>
           </View>
         </Pressable>
       ) : (
