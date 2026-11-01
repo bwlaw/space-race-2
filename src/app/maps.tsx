@@ -238,7 +238,7 @@ export default function MapsScreen() {
                 <View style={styles.infoFlags}>
                   <Flag country={nextPlace.country} code={nextPlace.code} width={27} label />
                 </View>
-                <Text style={styles.infoName}>{`Next launch ${relative(nextLaunch.l.net, now)}, from ${nextPlace.name}`}</Text>
+                <Text style={styles.infoName}>{`Next launch from ${nextPlace.name}`}</Text>
                 <Text style={styles.small}>{`${nextLaunch.l.rocket}, ${nextLaunch.l.mission}`}</Text>
               </>
             ) : (

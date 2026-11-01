@@ -151,8 +151,9 @@ export function parseExpeditions(raw: unknown): CrewMember[] {
 export function relative(ms: number, now = Date.now()): string {
   const diff = ms - now;
   const abs = Math.abs(diff);
-  const h = Math.round(abs / 3600000);
-  const d = Math.round(abs / 86400000);
-  const text = abs < 3600000 ? 'less than an hour' : h < 36 ? `${h} h` : `${d} days`;
+  const h = Math.floor(abs / 3600000);
+  const d = Math.floor(abs / 86400000);
+  // Hours up to two days, then whole days rounded down, so it never runs ahead of the real time.
+  const text = abs < 3600000 ? 'less than an hour' : h < 48 ? `${h} h` : `${d} days`;
   return diff >= 0 ? `in ${text}` : `${text} ago`;
 }
