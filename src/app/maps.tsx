@@ -132,7 +132,6 @@ export default function MapsScreen() {
   }, [isEarth, upcoming.data, now]);
   const dayIndex = Math.floor(now / 86400000);
   const nextLaunch = candidates.length ? candidates[dayIndex % candidates.length] : null;
-  const isVeryNext = !!nextLaunch && nextLaunch === candidates[0];
   const nextPlace = nextLaunch ? PLACES.Earth.find((p) => p.name === nextLaunch.site) ?? null : null;
   const fact = nextLaunch?.site ? SITE_FACTS[nextLaunch.site] : GENERAL_FACTS[Math.floor(now / 86400000) % GENERAL_FACTS.length];
   // A selected launch site shows its own next launch; without one, its info card.
@@ -140,7 +139,8 @@ export default function MapsScreen() {
   const showNext = isEarth && (!place || !!siteLaunch);
   const cardLaunch = place ? (siteLaunch ? { l: siteLaunch, site: place.name } : null) : nextLaunch;
   const cardPlace = place ?? nextPlace;
-  const cardTitle = place ? 'Next launch' : isVeryNext ? 'Next launch' : 'Upcoming launch';
+  // Each card shows the next launch from its site, so the title is the same before and after tapping.
+  const cardTitle = 'Next launch';
   const cardFact = cardLaunch ? SITE_FACTS[cardLaunch.site] ?? fact : fact;
   const info = place
       ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
