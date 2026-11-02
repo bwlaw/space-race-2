@@ -63,7 +63,8 @@ export default function RaceScreen() {
 
   const reachedCount = (c: Country) => list.filter((r) => r.countries.includes(c)).length;
   const note = !isMiles
-    ? (isAll ? 'The lanes count orbital launch attempts since 1957.' : `The lanes count orbital launch attempts${periodWords}.`) + (pick === 'Russia' ? ' Russia includes the Soviet Union.' : '') + (stats ? ` Launch counts updated ${formatDate(stats.updated)}.` : ' Launch counts are still sample figures; the latest launches are live.')
+    ? (isAll ? 'The lanes count orbital launch attempts since 1957.' : `The lanes count orbital launch attempts${periodWords}.`) +
+      ' Each launch counts for the country it lifts off from, whoever built the rocket: Kourou counts for Europe, Baikonur for Russia. Failed launches count too, and launches from other countries, such as Rocket Lab’s in New Zealand, are not part of the race.' + (pick === 'Russia' ? ' Russia includes the Soviet Union.' : '') + (stats ? ` Launch counts updated ${formatDate(stats.updated)}.` : ' Launch counts are still sample figures; the latest launches are live.')
     : period === 'last12'
       ? pick ? `${RECENT_HIGHLIGHTS.filter((h) => h.reachedBy.some(([c]) => c === pick)).length} highlights in the last 12 months.` : 'Highlights from the last 12 months. Each one adds its points to the lanes above.'
       : isFive
