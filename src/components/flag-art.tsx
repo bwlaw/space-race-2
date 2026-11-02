@@ -140,17 +140,37 @@ export function FlagArt({ code, width, height }: { code: string; width: number; 
       {code === 'KOR' && (
         <>
           <Rect width={60} height={40} fill="#FFFFFF" />
-          <G transform="rotate(33.7 30 20)">
+          <G transform="rotate(33.69 30 20)">
             <Path d="M20 20 A10 10 0 0 1 40 20 Z" fill="#CD2E3A" />
             <Path d="M20 20 A10 10 0 0 0 40 20 Z" fill="#0047A0" />
             <Circle cx={25} cy={20} r={5} fill="#CD2E3A" />
             <Circle cx={35} cy={20} r={5} fill="#0047A0" />
           </G>
-          <G stroke="#000000" strokeWidth={1.4}>
-            <Path d="M8 6 L14 2 M9 8 L15 4 M10 10 L16 6" />
-            <Path d="M44 30 L50 34 M45 28 L51 32 M46 26 L52 30" />
-            <Path d="M44 10 L50 6 M45 12 L51 8 M46 14 L52 10" />
-            <Path d="M8 34 L14 38 M9 32 L15 36 M10 30 L16 34" />
+          <G transform="translate(14.77 9.85) rotate(-56.31)" fill="#000000">
+            <Rect x={-5} y={-3.33} width={10} height={1.67} />
+            <Rect x={-5} y={-0.83} width={10} height={1.67} />
+            <Rect x={-5} y={1.67} width={10} height={1.67} />
+          </G>
+          <G transform="translate(45.23 9.85) rotate(56.31)" fill="#000000">
+            <Rect x={-5} y={-3.33} width={4.55} height={1.67} />
+            <Rect x={0.45} y={-3.33} width={4.55} height={1.67} />
+            <Rect x={-5} y={-0.83} width={10} height={1.67} />
+            <Rect x={-5} y={1.67} width={4.55} height={1.67} />
+            <Rect x={0.45} y={1.67} width={4.55} height={1.67} />
+          </G>
+          <G transform="translate(14.77 30.15) rotate(236.31)" fill="#000000">
+            <Rect x={-5} y={-3.33} width={10} height={1.67} />
+            <Rect x={-5} y={-0.83} width={4.55} height={1.67} />
+            <Rect x={0.45} y={-0.83} width={4.55} height={1.67} />
+            <Rect x={-5} y={1.67} width={10} height={1.67} />
+          </G>
+          <G transform="translate(45.23 30.15) rotate(123.69)" fill="#000000">
+            <Rect x={-5} y={-3.33} width={4.55} height={1.67} />
+            <Rect x={0.45} y={-3.33} width={4.55} height={1.67} />
+            <Rect x={-5} y={-0.83} width={4.55} height={1.67} />
+            <Rect x={0.45} y={-0.83} width={4.55} height={1.67} />
+            <Rect x={-5} y={1.67} width={4.55} height={1.67} />
+            <Rect x={0.45} y={1.67} width={4.55} height={1.67} />
           </G>
         </>
       )}
