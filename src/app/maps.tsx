@@ -11,7 +11,7 @@ import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
 import { BODY_INFO, BODY_STATS, MARS_ORBITERS, MOON_ORBITERS, PLACES, type Body } from '@/data/places';
 import { GENERAL_FACTS, SITE_FACTS, siteFor } from '@/data/site-facts';
-import { parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
+import { parseAllLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
 import { HOUR, MINUTE, useRemote } from '@/lib/remote';
 import { dateTime } from '@/lib/time';
@@ -91,7 +91,7 @@ export default function MapsScreen() {
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
   const now = useNow(2000);
-  const upcoming = useRemote('ll2-upcoming-v2', UPCOMING_URL, 30 * MINUTE, parseLaunches);
+  const upcoming = useRemote('ll2-upcoming-v3', UPCOMING_URL, 30 * MINUTE, parseAllLaunches);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
   const tgTle = useRemote('tle-tiangong', TLE_URLS.Tiangong, 6 * HOUR, parseTle, true);
   const issSat = useMemo(() => satrecFrom(issTle.data), [issTle.data]);

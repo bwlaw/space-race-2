@@ -24,7 +24,7 @@ export function countryFromCode(code?: string | null): Country | null {
 /** Launch Library writes placeholders like "Group TBD?" until the batch number is known. */
 export const cleanMission = (name: string) => name.replace(/\s+(TBD|TBC)\??$/i, '').trim() || 'Mission';
 
-export type Launch = {
+type BaseLaunch = {
   id: string;
   rocket: string;
   mission: string;
@@ -34,8 +34,14 @@ export type Launch = {
   stream?: string;
   /** True when the link is a real livestream, false for the provider's launch page. */
   streamIsLive: boolean;
-  country: Country;
+  /** ISO alpha-3 code of the launch site's country. */
+  code: string;
 };
+
+/** Any launch worldwide; country is null outside the six race countries. */
+export type WorldLaunch = BaseLaunch & { country: Country | null };
+/** A launch from one of the six race countries. */
+export type Launch = BaseLaunch & { country: Country };
 
 /** Official launch pages, used when no livestream link is listed yet. */
 const PROVIDER_PAGES: [RegExp, string][] = [
@@ -60,30 +66,36 @@ type RawLaunch = {
   pad?: { name?: string; country?: { alpha_3_code?: string }; location?: { name?: string; country?: { alpha_3_code?: string } } };
 };
 
-export function parseLaunches(raw: unknown): Launch[] {
+function toLaunches(raw: unknown): WorldLaunch[] {
   const results = ((raw as { results?: RawLaunch[] })?.results ?? []) as RawLaunch[];
-  const out: Launch[] = [];
-  for (const l of results) {
-    const code = l.pad?.country?.alpha_3_code ?? l.pad?.location?.country?.alpha_3_code;
-    const country = countryFromCode(code);
-    if (!country) continue;
+  return results.map((l) => {
+    const code = l.pad?.country?.alpha_3_code ?? l.pad?.location?.country?.alpha_3_code ?? '';
     const video = [...(l.vid_urls ?? []), ...(l.mission?.vid_urls ?? [])].find((v) => v.url)?.url;
     const provider = `${l.launch_service_provider?.name ?? ''} ${l.launch_service_provider?.abbrev ?? ''}`;
     const page = PROVIDER_PAGES.find(([re]) => re.test(provider))?.[1];
-    const stream = video ?? page;
-    out.push({
+    return {
       id: l.id,
       rocket: l.rocket?.configuration?.name ?? 'Rocket',
       mission: cleanMission(l.mission?.name ?? 'Mission'),
       site: (l.pad?.location?.name ?? l.pad?.name ?? '').split(',')[0],
       net: Date.parse(l.net),
       status: l.status?.abbrev ?? 'TBD',
-      stream,
+      stream: video ?? page,
       streamIsLive: !!video,
-      country,
-    });
-  }
-  return out;
+      code,
+      country: countryFromCode(code),
+    };
+  });
+}
+
+/** Launches from the six race countries only (for the race and its statistics). */
+export function parseLaunches(raw: unknown): Launch[] {
+  return toLaunches(raw).filter((l): l is Launch => l.country !== null);
+}
+
+/** Every launch worldwide (for the Launch screen and the map). */
+export function parseAllLaunches(raw: unknown): WorldLaunch[] {
+  return toLaunches(raw);
 }
 
 export type CrewMember = {

@@ -11,7 +11,7 @@ import { Section } from '@/components/section';
 import { LivePill, Screen } from '@/components/screen';
 import { C, F } from '@/constants/theme';
 import type { Country } from '@/data/countries';
-import { cleanMission, parseLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
+import { cleanMission, parseAllLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { useReminders } from '@/lib/reminders';
 import { MINUTE, useRemote } from '@/lib/remote';
 import { dateTime } from '@/lib/time';
@@ -49,7 +49,7 @@ function BellIcon({ filled }: { filled: boolean }) {
 const statusStyle = (s: string) => (s === 'Go' ? styles.go : s === 'TBC' ? styles.tbc : s === 'Hold' ? styles.hold : styles.tbd);
 
 export default function LaunchesScreen() {
-  const { data, state } = useRemote('ll2-upcoming-v2', UPCOMING_URL, 30 * MINUTE, parseLaunches);
+  const { data, state } = useRemote('ll2-upcoming-v3', UPCOMING_URL, 30 * MINUTE, parseAllLaunches);
   const now = useNow(1000);
   const [filter, setFilter] = useState<Country | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
@@ -98,7 +98,7 @@ export default function LaunchesScreen() {
           <>
             <View style={styles.heroText}>
               <View style={styles.row6}>
-                <Flag country={top.country} width={21} />
+                <Flag country={top.country} code={top.code} width={21} />
                 <Text style={styles.heroLabel}>{isNext ? (filter ? `Next launch from ${filter}` : 'Next launch') : 'Upcoming launch'}</Text>
               </View>
               <Text style={styles.heroRocket} numberOfLines={2}>{top.rocket}</Text>
@@ -158,7 +158,7 @@ export default function LaunchesScreen() {
               accessibilityState={{ selected: onTop }}
               accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}. Show at the top`}
               style={[styles.card, onTop && styles.cardOn]}>
-              <Flag country={l.country} width={36} label />
+              <Flag country={l.country} code={l.code} width={36} label />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={styles.cardTitle} numberOfLines={1}>{l.rocket}</Text>
                 <Text style={styles.small} numberOfLines={2}>{`${l.mission}, ${l.site}`}</Text>

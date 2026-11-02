@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
 
-import type { Launch } from '@/lib/ll2';
+import type { WorldLaunch } from '@/lib/ll2';
 
 const KEY = 'launch-reminders';
 const BEFORE_MS = 30 * 60 * 1000;
@@ -25,7 +25,7 @@ export function useReminders() {
   };
 
   const toggle = useCallback(
-    async (launch: Launch): Promise<'on' | 'off' | 'denied' | 'too-late'> => {
+    async (launch: WorldLaunch): Promise<'on' | 'off' | 'denied' | 'too-late'> => {
       const existing = ids[launch.id];
       if (existing) {
         await Notifications.cancelScheduledNotificationAsync(existing).catch(() => undefined);
