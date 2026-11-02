@@ -16,6 +16,9 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
 - Maps: fourth tab "Solar system" with live planet positions and active deep-space missions (Europa Clipper, Juice, BepiColombo, Psyche, Lucy, Tianwen-2, Parker, Solar Orbiter, Voyager 1 and 2).
 - Spacecraft positions daily from NASA JPL Horizons via the nightly job; mission details as a hand-checked list.
 - Optional time slider to move planets and probes forward to arrival dates.
+- Moon and Mars: when an orbiter that is still in use is selected, a small dot marks it on the dashed orbit ring.
+  - Each orbiter has its own place on the ring, so switching between them moves the dot around the planet.
+  - Only the selected orbiter is shown; with nothing selected, or a past orbiter selected, the ring stays empty.
 
 ## 1.3 – Satellites (target: early January 2027)
 - Space Race: third metric "Satellites" with tabs Countries | Companies (SpaceX Starlink, Eutelsat OneWeb, Amazon Kuiper, Planet, Qianfan, Spire, Iridium, other companies).
