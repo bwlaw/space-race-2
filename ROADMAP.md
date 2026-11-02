@@ -21,7 +21,11 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
   - Only the selected orbiter is shown; with nothing selected, or a past orbiter selected, the ring stays empty.
 
 ## 1.3 – Satellites (target: early January 2027)
-- Space Race: third metric "Satellites" with tabs Countries | Companies (SpaceX Starlink, Eutelsat OneWeb, Amazon Kuiper, Planet, Qianfan, Spire, Iridium, other companies).
+- Space Race: third metric "Satellites" (countries: active satellites per country; companies: SpaceX Starlink, Eutelsat OneWeb, Amazon Kuiper, Planet, Qianfan, Spire, Iridium, other companies).
+- Space Race: Countries | Companies switch for the whole race (Milestones, Launches and Satellites).
+  - Design: a quiet grey word with a swap symbol in the top-right corner ("Countries ⇄" / "Companies ⇄"); the title stays "Space Race"; the "… leads" line names the leading country or company.
+  - Company milestones: hand-checked commercial firsts (e.g. Falcon 1 to orbit 2008, Dragon at the ISS 2012, first private crewed orbital flight 2020, first private spacewalk 2024, commercial Moon landings 2024 and 2025, Landspace's methane rocket to orbit 2023), each company with its home-country flag.
+  - Company launches: launch counts per provider from Launch Library 2 via the nightly job.
 - Maps, Earth: satellites layer with selected satellites at live positions (Hubble, weather, GPS, Galileo, BeiDou, GLONASS).
   - The three buttons below the Earth map become ISS | Tiangong | Satellites ("Both" is replaced).
   - Each button switches its layer on or off independently, so any combination can be shown.
