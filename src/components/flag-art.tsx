@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Path, Polygon, Rect } from 'react-nativ
  * Every flag in the app, drawn as vector shapes (60 × 40 units).
  * No image files are involved, so flags can never fail to load.
  */
-export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR', 'IRN']);
+export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR', 'IRN', 'PRK', 'ISR', 'AUS', 'GBR']);
 
 export function FlagArt({ code, width, height }: { code: string; width: number; height: number }) {
   return (
@@ -166,6 +166,63 @@ export function FlagArt({ code, width, height }: { code: string; width: number; 
             <Path d="M32.4 16.6 C34.6 18.6 34.4 22.4 32 24" />
             <Path d="M25.8 17 C23.2 19.4 23.6 23.6 26.6 25" />
             <Path d="M34.2 17 C36.8 19.4 36.4 23.6 33.4 25" />
+          </G>
+        </>
+      )}
+      {code === 'PRK' && (
+        <>
+          <Rect width={60} height={40} fill="#024FA2" />
+          <Rect y={6.5} width={60} height={27} fill="#FFFFFF" />
+          <Rect y={7.8} width={60} height={24.4} fill="#ED1C27" />
+          <Circle cx={20} cy={20} r={8} fill="#FFFFFF" />
+          <Polygon points="20.0,13.2 21.7,18.2 27.0,18.3 22.8,21.5 24.3,26.6 20.0,23.6 15.7,26.6 17.2,21.5 13.0,18.3 18.3,18.2" fill="#ED1C27" />
+        </>
+      )}
+      {code === 'ISR' && (
+        <>
+          <Rect width={60} height={40} fill="#FFFFFF" />
+          <Rect y={4} width={60} height={5.5} fill="#0038B8" />
+          <Rect y={30.5} width={60} height={5.5} fill="#0038B8" />
+          <Polygon points="30,12.5 36.5,23.75 23.5,23.75" fill="none" stroke="#0038B8" strokeWidth={1.6} />
+          <Polygon points="30,27.5 23.5,16.25 36.5,16.25" fill="none" stroke="#0038B8" strokeWidth={1.6} />
+        </>
+      )}
+      {code === 'AUS' && (
+        <>
+          <Rect width={60} height={40} fill="#012169" />
+          <Defs>
+            <ClipPath id="aus-canton">
+              <Rect width={30} height={20} />
+            </ClipPath>
+          </Defs>
+          <G clipPath="url(#aus-canton)">
+            <Rect width={30} height={20} fill="#012169" />
+            <Path d="M0 0L30 20M30 0L0 20" stroke="#FFFFFF" strokeWidth={4.0} />
+            <Path d="M0 0L30 20M30 0L0 20" stroke="#C8102E" strokeWidth={1.6} />
+            <Path d="M15.0 0V20M0 10.0H30" stroke="#FFFFFF" strokeWidth={6.1} />
+            <Path d="M15.0 0V20M0 10.0H30" stroke="#C8102E" strokeWidth={3.4} />
+          </G>
+          <Polygon points="15.0,25.5 16.0,28.5 18.9,27.4 17.2,30.0 19.9,31.6 16.8,31.9 17.2,35.0 15.0,32.8 12.8,35.0 13.2,31.9 10.1,31.6 12.8,30.0 11.1,27.4 14.0,28.5" fill="#FFFFFF" />
+          <Polygon points="45.0,30.2 45.5,31.9 47.2,31.3 46.2,32.7 47.7,33.6 46.0,33.8 46.2,35.5 45.0,34.3 43.8,35.5 44.0,33.8 42.3,33.6 43.8,32.7 42.8,31.3 44.5,31.9" fill="#FFFFFF" />
+          <Polygon points="38.5,16.4 39.0,17.9 40.5,17.4 39.6,18.7 41.0,19.6 39.4,19.7 39.6,21.3 38.5,20.2 37.4,21.3 37.6,19.7 36.0,19.6 37.4,18.7 36.5,17.4 38.0,17.9" fill="#FFFFFF" />
+          <Polygon points="45.0,4.9 45.5,6.4 47.0,5.9 46.1,7.2 47.5,8.1 45.9,8.2 46.1,9.8 45.0,8.7 43.9,9.8 44.1,8.2 42.5,8.1 43.9,7.2 43.0,5.9 44.5,6.4" fill="#FFFFFF" />
+          <Polygon points="51.5,13.4 52.0,14.9 53.5,14.4 52.6,15.7 54.0,16.6 52.4,16.7 52.6,18.3 51.5,17.2 50.4,18.3 50.6,16.7 49.0,16.6 50.4,15.7 49.5,14.4 51.0,14.9" fill="#FFFFFF" />
+          <Polygon points="48.0,21.0 48.4,22.0 49.4,22.0 48.6,22.7 48.9,23.7 48.0,23.2 47.1,23.7 47.4,22.7 46.6,22.0 47.6,22.0" fill="#FFFFFF" />
+        </>
+      )}
+      {code === 'GBR' && (
+        <>
+          <Defs>
+            <ClipPath id="gb-flag">
+              <Rect width={60} height={40} />
+            </ClipPath>
+          </Defs>
+          <G clipPath="url(#gb-flag)">
+            <Rect width={60} height={40} fill="#012169" />
+            <Path d="M0 0L60 40M60 0L0 40" stroke="#FFFFFF" strokeWidth={8.0} />
+            <Path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" strokeWidth={3.2} />
+            <Path d="M30.0 0V40M0 20.0H60" stroke="#FFFFFF" strokeWidth={12.1} />
+            <Path d="M30.0 0V40M0 20.0H60" stroke="#C8102E" strokeWidth={6.8} />
           </G>
         </>
       )}
