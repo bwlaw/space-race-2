@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Path, Polygon, Rect } from 'react-nativ
  * Every flag in the app, drawn as vector shapes (60 × 40 units).
  * No image files are involved, so flags can never fail to load.
  */
-export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR']);
+export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR', 'IRN']);
 
 export function FlagArt({ code, width, height }: { code: string; width: number; height: number }) {
   return (
@@ -151,6 +151,21 @@ export function FlagArt({ code, width, height }: { code: string; width: number; 
             <Path d="M44 30 L50 34 M45 28 L51 32 M46 26 L52 30" />
             <Path d="M44 10 L50 6 M45 12 L51 8 M46 14 L52 10" />
             <Path d="M8 34 L14 38 M9 32 L15 36 M10 30 L16 34" />
+          </G>
+        </>
+      )}
+      {code === 'IRN' && (
+        <>
+          <Rect width={60} height={13.4} fill="#239F40" />
+          <Rect y={13.3} width={60} height={13.4} fill="#FFFFFF" />
+          <Rect y={26.6} width={60} height={13.4} fill="#DA0000" />
+          <Path d="M3 12.6 H57 M3 27.4 H57" stroke="#FFFFFF" strokeWidth={0.9} strokeDasharray="1.6 1.4" />
+          <G fill="none" stroke="#DA0000" strokeWidth={1.3} strokeLinecap="round">
+            <Path d="M30 15.2 V24.6" />
+            <Path d="M27.6 16.6 C25.4 18.6 25.6 22.4 28 24" />
+            <Path d="M32.4 16.6 C34.6 18.6 34.4 22.4 32 24" />
+            <Path d="M25.8 17 C23.2 19.4 23.6 23.6 26.6 25" />
+            <Path d="M34.2 17 C36.8 19.4 36.4 23.6 33.4 25" />
           </G>
         </>
       )}
