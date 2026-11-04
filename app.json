@@ -46,6 +46,16 @@
       "reactCompiler": true
     },
     "backgroundColor": "#06122B",
-    "owner": "ben-space-race"
+    "owner": "ben-space-race",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "0c4ee00f-5c49-4532-b862-cf6da1b2ec33"
+      }
+    }
   }
 }
