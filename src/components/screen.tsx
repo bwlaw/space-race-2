@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { useNetworkState } from 'expo-network';
 import { useNavigation } from 'expo-router';
 import { Image } from 'expo-image';
 import { ScrollView, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
@@ -47,7 +48,10 @@ export function Pill({ label }: { label: string }) {
 }
 
 /** Shows where the data on a screen comes from right now. */
-export function LivePill({ state }: { state: LoadState }) {
+export function LivePill({ state: loadState }: { state: LoadState }) {
+  // Without a connection the data on screen is always the saved copy.
+  const net = useNetworkState();
+  const state: LoadState = net.isConnected === false || net.isInternetReachable === false ? 'saved' : loadState;
   const label = state === 'live' ? 'Live' : state === 'loading' ? 'Loading…' : 'Offline';
   const dot = state === 'live' ? C.green : state === 'loading' ? C.muted : C.orange;
   return (
