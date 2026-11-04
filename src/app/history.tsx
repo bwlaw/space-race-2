@@ -20,7 +20,7 @@ import { ON_THIS_DAY_URL, parseOnThisDay, parseStats, STATS_URL } from '@/lib/st
 
 const PRIVACY_URL = 'https://bwlaw.github.io/space-race-2/privacy.html';
 const SUPPORT_URL = 'https://github.com/bwlaw/space-race-2/issues';
-const CONTACT_URL = 'https://bwlaw.ch';
+const CONTACT_URL = 'https://www.threads.com/@benhart.me';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const FIRST_YEAR = 1957;
@@ -216,7 +216,7 @@ export default function HistoryScreen() {
             <Text style={styles.link}>Feedback and support</Text>
           </Pressable>
           <Pressable onPress={() => WebBrowser.openBrowserAsync(CONTACT_URL)} accessibilityRole="link" hitSlop={6}>
-            <Text style={styles.link}>Contact</Text>
+            <Text style={styles.link}>Contact on Threads (@benhart.me)</Text>
           </Pressable>
         </View>
       </Section>
