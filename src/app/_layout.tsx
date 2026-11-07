@@ -8,9 +8,6 @@ import { useEffect } from 'react';
 
 import { C } from '@/constants/theme';
 
-// The app opens on the Launch tab.
-export const unstable_settings = { anchor: 'launches' };
-
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
@@ -37,11 +34,11 @@ export default function RootLayout() {
         iconColor={{ default: C.muted, selected: C.sky }}
         labelStyle={{ default: { color: C.muted }, selected: { color: C.sky } }}
         indicatorColor="rgba(90,176,255,0.18)">
-        <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger name="race">
           <NativeTabs.Trigger.Label>Race</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/race.png')} renderingMode="template" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="launches">
+        <NativeTabs.Trigger name="index">
           <NativeTabs.Trigger.Label>Launch</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon src={require('@/assets/images/tabs/launches.png')} renderingMode="template" />
         </NativeTabs.Trigger>
