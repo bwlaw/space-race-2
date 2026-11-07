@@ -690,10 +690,10 @@
   "mission": "Yaogan 51-07 to 09"
  },
  "11-07": {
-  "year": 2024,
+  "year": 2026,
   "country": "USA",
   "rocket": "Falcon 9",
-  "mission": "Starlink Group 6-77"
+  "mission": "USSF-432"
  },
  "11-10": {
   "year": 2025,
@@ -2040,10 +2040,10 @@
   "mission": "SatNet LEO Group 28"
  },
  "11-06": {
-  "year": 2025,
-  "country": "USA",
-  "rocket": "Falcon 9",
-  "mission": "Starlink Group 11-14"
+  "year": 2026,
+  "country": "China",
+  "rocket": "Ceres-2",
+  "mission": "4 satellites"
  },
  "12-02": {
   "year": 2025,
