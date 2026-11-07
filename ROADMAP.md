@@ -51,6 +51,10 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
   - Respects the system "Reduce Motion" setting by moving in larger steps.
 
 ## Later ideas
+- In Space: "Explore the station" for the ISS and Tiangong.
+  - A schematic of each station with tappable modules: name, country, year added and purpose (ISS e.g. Zarya, Unity, Zvezda, Destiny, Columbus, Kibo, Cupola, Nauka; Tiangong: Tianhe, Wentian, Mengtian).
+  - What the stations can do: labs, docking ports, robotic arms, airlocks, solar arrays.
+  - Featured experiments: a hand-picked, regularly updated selection (e.g. from NASA's and ESA's public research databases), with the country running each one.
 - Launches by company (SpaceX, Rocket Lab, Arianespace, CASC, …).
 - Re-enable "Last 12 months" for milestones once there is real data for it.
 - Android release on Google Play.
