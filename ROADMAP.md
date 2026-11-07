@@ -30,6 +30,10 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
   - The three buttons below the Earth map become ISS | Tiangong | Satellites ("Both" is replaced).
   - Each button switches its layer on or off independently, so any combination can be shown.
   - While Satellites is on, the launch-site dots are hidden on the map.
+  - Constellations shown as moving swarms of dots, one colour each: Starlink, OneWeb, GPS, Galileo, BeiDou (and GLONASS); speed and spread follow the real orbits.
+  - Chips below the map switch each constellation on and off; tapping a chip opens a short info card with the real total (e.g. "about 9,000 Starlink satellites, 300 shown").
+  - "How high they fly": a small side view on a logarithmic scale, from Starlink (~550 km) to the navigation systems (20,000+ km), with the ISS and the geostationary ring as landmarks.
+  - Data: the nightly job picks a representative sample per constellation from CelesTrak (a few hundred Starlink, all navigation satellites); the phone calculates live positions as for the ISS. Dots are drawn as one layer for performance.
   - Below the map: Launch Sites sorted by number of launches (busiest first) and showing the top 5 by default, with a "Show more launch sites" button for the rest, followed by a new list of the most important satellites.
   - Launch counts per site come from Launch Library 2 via the nightly job, so the order stays current.
 - History: satellites in orbit per country over time.
