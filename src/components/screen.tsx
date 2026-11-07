@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { useNetworkState } from 'expo-network';
 import { useNavigation } from 'expo-router';
 import { Image } from 'expo-image';
@@ -10,9 +10,10 @@ import type { LoadState } from '@/lib/remote';
 
 const STARS = require('@/assets/images/scenes/starfield.png');
 
-export function Screen({ title, right, children }: { title: string; right?: ReactNode; children: ReactNode }) {
+export function Screen({ title, right, children, scrollRef }: { title: string; right?: ReactNode; children: ReactNode; scrollRef?: RefObject<ScrollViewInstance | null> }) {
   const insets = useSafeAreaInsets();
-  const scroll = useRef<ScrollViewInstance>(null);
+  const own = useRef<ScrollViewInstance>(null);
+  const scroll = scrollRef ?? own;
   const navigation = useNavigation();
 
   // Tapping the tab icon of the screen you're on scrolls back to the top.
@@ -21,7 +22,7 @@ export function Screen({ title, right, children }: { title: string; right?: Reac
       if (navigation.isFocused()) scroll.current?.scrollTo({ y: 0, animated: true });
     });
     return off;
-  }, [navigation]);
+  }, [navigation, scroll]);
   return (
     <View style={styles.bg}>
       <Image source={STARS} contentFit="cover" style={styles.fill} accessible={false} />

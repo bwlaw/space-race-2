@@ -8,6 +8,9 @@ import { useEffect } from 'react';
 
 import { C } from '@/constants/theme';
 
+// The app opens on the Launch tab.
+export const unstable_settings = { anchor: 'launches' };
+
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({

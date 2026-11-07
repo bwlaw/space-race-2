@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
@@ -86,7 +86,9 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
 
 export default function MapsScreen() {
   const [body, setBody] = useState<Body>('Earth');
-  const [orbit, setOrbit] = useState<Orbit>('None');
+  const [layers, setLayers] = useState({ iss: false, tg: false });
+  const orbit: Orbit = layers.iss && layers.tg ? 'Both' : layers.iss ? 'ISS' : layers.tg ? 'Tiangong' : 'None';
+  const scroll = useRef<ScrollViewInstance>(null);
   const [sel, setSel] = useState<string | null>(null);
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
@@ -173,9 +175,17 @@ export default function MapsScreen() {
   const toggle = (key: string) => setSel(sel === key ? null : key);
 
   // Each orbit button shows its layer; tapping the active button again hides the stations.
+  // ISS and Tiangong are separate layers that can be combined; Both switches the two together.
   const pickOrbit = (o: Orbit) => {
-    setOrbit(orbit === o ? 'None' : o);
+    if (o === 'Both') setLayers(layers.iss && layers.tg ? { iss: false, tg: false } : { iss: true, tg: true });
+    else if (o === 'ISS') setLayers({ ...layers, iss: !layers.iss });
+    else if (o === 'Tiangong') setLayers({ ...layers, tg: !layers.tg });
     if (sel === 'ISS' || sel === 'Tiangong' || sel === 'Both') setSel(null);
+  };
+  // In the lists: the first tap opens the info, a second tap shows the place on the map.
+  const pickRow = (key: string) => {
+    if (sel === key) scroll.current?.scrollTo({ y: 0, animated: true });
+    else setSel(key);
   };
 
   const pickBody = (b: Body) => {
@@ -184,7 +194,7 @@ export default function MapsScreen() {
   };
 
   return (
-    <Screen title="Maps" right={isEarth ? <LivePill state={liveState} /> : undefined}>
+    <Screen scrollRef={scroll} title="Maps" right={isEarth ? <LivePill state={liveState} /> : undefined}>
       <Segmented options={[{ value: 'Earth', label: 'Earth' }, { value: 'Moon', label: 'Moon' }, { value: 'Mars', label: 'Mars' }]} value={body} onChange={pickBody} />
 
       <View style={styles.map}>
@@ -293,7 +303,7 @@ export default function MapsScreen() {
       {isEarth && (
         <View style={styles.orbits}>
           {(['ISS', 'Tiangong', 'Both'] as const).map((o) => {
-            const on = orbit === o;
+            const on = o === 'Both' ? layers.iss && layers.tg : o === 'ISS' ? layers.iss : layers.tg;
             return (
               <Pressable key={o} onPress={() => pickOrbit(o)} accessibilityRole="button" accessibilityState={{ selected: on }} style={[styles.orbitBtn, on ? styles.orbitOn : styles.orbitOff]}>
                 <View style={styles.orbitDot}>
@@ -326,7 +336,7 @@ export default function MapsScreen() {
           <ItemRow
             key={p.name}
             on={p.name === curKey}
-            onPress={() => toggle(p.name)}
+            onPress={() => pickRow(p.name)}
             name={p.name}
             sub={p.sub}
             country={p.country}
@@ -345,7 +355,7 @@ export default function MapsScreen() {
             <ItemRow
               key={o.key}
               on={o.key === curKey}
-              onPress={() => toggle(o.key)}
+              onPress={() => pickRow(o.key)}
               name={o.name}
               sub={o.sub}
               country={o.country}

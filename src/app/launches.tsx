@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 
@@ -56,6 +56,7 @@ export default function LaunchesScreen() {
   const reminders = useReminders();
   const [notice, setNotice] = useState<string | null>(null);
   const [openList, setOpenList] = useState(true);
+  const scroll = useRef<ScrollViewInstance>(null);
   const [showAll, setShowAll] = useState(false);
 
   // Launches stay listed until they have lifted off.
@@ -83,7 +84,7 @@ export default function LaunchesScreen() {
   };
 
   return (
-    <Screen title="Launch" right={<LivePill state={state} />}>
+    <Screen scrollRef={scroll} title="Launch" right={<LivePill state={state} />}>
       <View style={styles.hero}>
         <Image source={PAD} style={styles.fill} contentFit="cover" accessible={false} />
         <LinearGradient
@@ -153,7 +154,10 @@ export default function LaunchesScreen() {
           return (
             <Pressable
               key={l.id}
-              onPress={() => setPicked(picked === l.id ? null : l.id)}
+              onPress={() => {
+                setPicked(picked === l.id ? null : l.id);
+                scroll.current?.scrollTo({ y: 0, animated: true });
+              }}
               accessibilityRole="button"
               accessibilityState={{ selected: onTop }}
               accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}. Show at the top`}
