@@ -65,7 +65,7 @@ export const BODY_STATS: Record<Body | 'ISS' | 'Tiangong' | 'Both', { label: str
   Both: [{ label: 'ISS altitude', value: '~400', unit: 'km' }, { label: 'Tiangong', value: '~390', unit: 'km' }, { label: 'One orbit', value: '~92', unit: 'minutes each' }],
   Earth: [],
   Moon: [{ label: 'Distance', value: '~384,000', unit: 'km' }, { label: 'Travel time', value: '~3', unit: 'days' }, { label: 'Sites shown', value: '5', unit: 'landings' }],
-  Mars: [{ label: 'Distance', value: '55–400', unit: 'million km' }, { label: 'Travel time', value: '~7', unit: 'months' }, { label: 'Sites shown', value: '5', unit: 'landings' }],
+  Mars: [{ label: 'Distance', value: '55–400', unit: 'million km' }, { label: 'Travel time', value: '7–9', unit: 'months' }, { label: 'Sites shown', value: '5', unit: 'landings' }],
 };
 
 export type InfoCard = { name: string; countries: Country[]; codes?: string[]; kind: string; inUse: string; note: string };
