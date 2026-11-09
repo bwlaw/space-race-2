@@ -9,7 +9,9 @@ export type CountryStat = { launches: number; successRate: number | null; rocket
 export type Stats = {
   updated: string;
   periods: Record<Period, Record<Country, CountryStat>>;
-  world: { launches: number; successRate: number | null; crewed?: number; astronauts?: number };
+  world: { launches: number; successRate: number | null; crewed?: number; astronauts?: number; lastWeek?: number };
+  /** Launch attempts in the last seven days per country. */
+  lastWeek?: Record<Country, number>;
 };
 
 export function parseStats(raw: unknown): Stats {

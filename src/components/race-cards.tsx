@@ -38,7 +38,7 @@ export function FutureCard({ name, points }: { name: string; points: number }) {
   );
 }
 
-export function LaunchStatsTable({ rows }: { rows: { country: Country; count: number; rate: number; rocket: string }[] }) {
+export function LaunchStatsTable({ rows }: { rows: { country: Country; count: number; rate: number; rocket: string; week?: number }[] }) {
   return (
     <View style={[styles.card, styles.table]}>
       {rows.map((r, i) => (
@@ -50,7 +50,7 @@ export function LaunchStatsTable({ rows }: { rows: { country: Country; count: nu
           </View>
           <View style={styles.statCol}>
             <Text style={styles.statNum}>{formatNumber(r.count)}</Text>
-            <Text style={styles.tiny}>launches</Text>
+            {r.week ? <Text style={[styles.tiny, { color: C.green }]}>{`+${r.week} this week`}</Text> : <Text style={styles.tiny}>launches</Text>}
           </View>
           <View style={[styles.statCol, { width: 56 }]}>
             <Text style={[styles.statNum, { color: C.green }]}>{r.rate}%</Text>

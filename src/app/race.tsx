@@ -45,7 +45,7 @@ export default function RaceScreen() {
   const changePeriod = (p: Period) => { setPeriod(p); setMore(false); };
   const togglePick = (c: Country) => { setPick(pick === c ? null : c); setMore(false); };
 
-  const statRows = COUNTRIES.map((c) => { const [count, rate, rocket] = launchStat(stats, period, c); return { country: c, count, rate, rocket }; })
+  const statRows = COUNTRIES.map((c) => { const [count, rate, rocket] = launchStat(stats, period, c); return { country: c, count, rate, rocket, week: stats?.lastWeek?.[c] }; })
     .sort((a, b) => b.count - a.count)
     .filter((r) => !pick || r.country === pick);
   const latest = (recent.data ?? [])

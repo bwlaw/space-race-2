@@ -119,6 +119,17 @@ async function main() {
     }
   }
 
+  // Launch attempts in the last seven days, shown as "+N this week" in the app.
+  const weekStart = now.getTime() - 7 * 86400_000;
+  const lastWeek = Object.fromEntries(COUNTRIES.map((c) => [c, 0]));
+  let lastWeekWorld = 0;
+  for (const l of recent) {
+    if (!ATTEMPT.has(l.status?.abbrev) || Date.parse(l.net) < weekStart) continue;
+    lastWeekWorld += 1;
+    const c = countryFromCode(l.pad?.country?.alpha_3_code ?? l.pad?.location?.country?.alpha_3_code);
+    if (c) lastWeek[c] += 1;
+  }
+
   const finish = (p) =>
     Object.fromEntries(
       COUNTRIES.map((c) => {
@@ -133,7 +144,8 @@ async function main() {
     source: 'Launch Library 2 by The Space Devs',
     fiveYearStart: fiveStart.toISOString().slice(0, 10),
     periods: { allTime, last5: finish('last5'), last12: finish('last12') },
-    world: { launches: worldAttempts, successRate: rate(worldSuccesses, worldAttempts), crewed: worldCrewed, astronauts: people.length },
+    lastWeek,
+    world: { lastWeek: lastWeekWorld, launches: worldAttempts, successRate: rate(worldSuccesses, worldAttempts), crewed: worldCrewed, astronauts: people.length },
   };
   await mkdir('data', { recursive: true });
   await writeFile('data/stats.json', `${JSON.stringify(stats, null, 2)}\n`);
