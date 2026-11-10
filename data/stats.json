@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09T11:52:47.535Z",
+  "updated": "2026-11-10T11:56:07.956Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
@@ -80,8 +80,8 @@
         "rocket": "Falcon 9"
       },
       "China": {
-        "launches": 102,
-        "successRate": 95,
+        "launches": 100,
+        "successRate": 96,
         "rocket": "Long March 6A"
       },
       "Russia": {
@@ -108,14 +108,14 @@
   },
   "lastWeek": {
     "USA": 1,
-    "China": 4,
+    "China": 3,
     "Russia": 1,
     "Europe": 0,
     "India": 0,
     "Japan": 0
   },
   "world": {
-    "lastWeek": 7,
+    "lastWeek": 5,
     "launches": 7669,
     "successRate": 93,
     "crewed": 374,
