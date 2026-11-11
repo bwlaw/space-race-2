@@ -50,6 +50,18 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
   - Bars and the milestone list update as it runs; tap again to pause; dragging the slider stops playback.
   - Respects the system "Reduce Motion" setting by moving in larger steps.
 
+## 1.5 – Predictions and moon rocks (target: February 2027)
+- Space Race: a "Predictions" section with questions the app can resolve automatically from its own data.
+  - Long-term milestones (e.g. next crewed Moon landing, first humans on Mars), monthly questions (e.g. who launches most this month) and single launches (e.g. will the next Starship flight reach its planned orbit, will a launch happen on its planned day).
+  - Correct predictions earn moon rocks; long shots earn more than favourites.
+  - A moon-rock counter at the top of Space Race.
+- Collection: moon rocks unlock samples named after real sample-return missions (Apollo 11, Luna 16, Chang'e 5, later a Mars sample); later possibly cosmetic extras such as rocket designs for the lanes.
+- Rules:
+  - No stakes and no purchases: rocks can only be won, never lost or bought; always called "Predictions", never betting.
+  - Everything stored on the phone, no account, no new data collected (privacy label stays "Data Not Collected").
+  - Only questions the app's data can decide (launch results, crew flights, nightly statistics).
+- A shared leaderboard would be a separate later step, as it needs accounts and a server.
+
 ## Later ideas
 - In Space: "Explore the station" for the ISS and Tiangong.
   - A schematic of each station with tappable modules: name, country, year added and purpose (ISS e.g. Zarya, Unity, Zvezda, Destiny, Columbus, Kibo, Cupola, Nauka; Tiangong: Tianhe, Wentian, Mengtian).
