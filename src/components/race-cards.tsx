@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -71,33 +72,53 @@ function outcome(status: string): { label: string; tone: 'ok' | 'fail' | 'partia
   return { label: 'Awaiting result', tone: 'pending' };
 }
 
-export function LaunchCard({ country, rocket, mission, when, status, stream, at }: { country: Country; rocket: string; mission: string; when: string; status: string; stream?: string; at?: string }) {
+type LaunchCardProps = { country: Country; rocket: string; mission: string; when: string; status: string; stream?: string; at?: string; site?: string };
+
+/** A recent launch; tap to show the launch time and site. */
+export function LaunchCard({ country, rocket, mission, when, status, stream, at, site }: LaunchCardProps) {
   const o = outcome(status);
+  const [open, setOpen] = useState(false);
+  const canOpen = !!(at || site);
   return (
-    <View style={[styles.card, { alignItems: 'center' }]}>
-      <Flag country={country} width={33} label />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{rocket}</Text>
-        <Text style={styles.small}>{mission}</Text>
-        {stream && (
-          <Pressable onPress={() => WebBrowser.openBrowserAsync(stream)} accessibilityRole="link" hitSlop={8} style={styles.watch}>
-            <Svg width={12} height={12} viewBox="0 0 24 24">
-              <Path d="M7 4l13 8-13 8z" fill={C.sky} />
-            </Svg>
-            <Text style={styles.watchText}>Watch</Text>
-          </Pressable>
-        )}
+    <Pressable
+      onPress={canOpen ? () => setOpen(!open) : undefined}
+      accessibilityRole={canOpen ? 'button' : undefined}
+      accessibilityState={canOpen ? { expanded: open } : undefined}
+      style={[styles.card, styles.launchCard, open && { borderColor: C.sky }]}>
+      <View style={styles.launchRow}>
+        <Flag country={country} width={33} label />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{rocket}</Text>
+          <Text style={styles.small}>{mission}</Text>
+          {stream && (
+            <Pressable onPress={() => WebBrowser.openBrowserAsync(stream)} accessibilityRole="link" hitSlop={8} style={styles.watch}>
+              <Svg width={12} height={12} viewBox="0 0 24 24">
+                <Path d="M7 4l13 8-13 8z" fill={C.sky} />
+              </Svg>
+              <Text style={styles.watchText}>Watch</Text>
+            </Pressable>
+          )}
+        </View>
+        <View style={{ alignItems: 'flex-end', gap: 4 }}>
+          <Text style={[styles.outcome, styles[o.tone]]}>{o.label}</Text>
+          <Text style={styles.small}>{when}</Text>
+        </View>
       </View>
-      <View style={{ alignItems: 'flex-end', gap: 4 }}>
-        <Text style={[styles.outcome, styles[o.tone]]}>{o.label}</Text>
-        <Text style={styles.small}>{when}</Text>
-        {at && <Text style={styles.tiny}>{at}</Text>}
-      </View>
-    </View>
+      {open && (
+        <View style={styles.launchMore}>
+          {at && <Text style={styles.launchAt}>{at}</Text>}
+          {site && <Text style={styles.small}>{site}</Text>}
+        </View>
+      )}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  launchCard: { flexDirection: 'column', gap: 0 },
+  launchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  launchMore: { marginTop: 10, paddingTop: 10, paddingLeft: 45, borderTopWidth: 1, borderTopColor: C.line, gap: 3 },
+  launchAt: { fontSize: 13, fontWeight: '600', color: C.orangeSoft },
   card: { flexDirection: 'row', gap: 12, backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14 },
   future: { backgroundColor: 'transparent', borderStyle: 'dashed', borderColor: '#2C4C80' },
   badge: { width: 46, height: 30, borderRadius: 8, backgroundColor: 'rgba(255,159,67,0.16)', alignItems: 'center', justifyContent: 'center' },
