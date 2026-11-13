@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T11:59:22.436Z",
+  "updated": "2026-11-13T11:37:33.957Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
@@ -108,14 +108,14 @@
   },
   "lastWeek": {
     "USA": 2,
-    "China": 4,
+    "China": 3,
     "Russia": 1,
     "Europe": 0,
     "India": 0,
     "Japan": 0
   },
   "world": {
-    "lastWeek": 7,
+    "lastWeek": 6,
     "launches": 7671,
     "successRate": 93,
     "crewed": 374,
