@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
@@ -35,6 +36,7 @@ export default function SpaceScreen() {
   const station: Station = view === 'Tiangong' ? 'Tiangong' : 'ISS';
   const [open, setOpen] = useState<number>(0);
   const [openLaunches, setOpenLaunches] = useState(true);
+  const router = useRouter();
   const [dockUrl] = useState(() => dockedUrl());
   const docked = useRemote('ll2-docked', dockUrl, HOUR, parseDocked);
   const crewed = useRemote('ll2-crewed', CREWED_URL, HOUR, parseAllLaunches);
@@ -188,7 +190,13 @@ export default function SpaceScreen() {
 
       <Section title="Next crewed launches" count={nextCrewed.length} open={openLaunches} onToggle={() => setOpenLaunches(!openLaunches)}>
         {nextCrewed.slice(0, 5).map((l) => (
-          <View key={l.id} style={styles.card} accessible accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}`}>
+          <Pressable
+            key={l.id}
+            onPress={() => router.navigate({ pathname: '/', params: { launch: l.id, t: String(Date.now()) } })}
+            accessibilityRole="button"
+            accessibilityHint="Opens this launch on the Launch screen"
+            accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}`}
+            style={styles.card}>
             <View style={styles.cardRow}>
               <Flag country={l.country} code={l.code} width={30} />
               <View style={{ flex: 1 }}>
@@ -200,7 +208,7 @@ export default function SpaceScreen() {
                 <Text style={styles.tiny}>{dateTime(l.net)}</Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         ))}
         {nextCrewed.length === 0 && (
           <Text style={styles.role}>{crewed.state === 'loading' ? 'Loading crewed launches…' : 'No crewed launches announced right now.'}</Text>

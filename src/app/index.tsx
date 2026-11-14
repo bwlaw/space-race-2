@@ -3,6 +3,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { Image } from 'expo-image';
+import { useLocalSearchParams } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 
 import { CountryFilter } from '@/components/country-filter';
@@ -58,6 +59,17 @@ export default function LaunchesScreen() {
   const [openList, setOpenList] = useState(true);
   const scroll = useRef<ScrollViewInstance>(null);
   const [showAll, setShowAll] = useState(false);
+  // Other screens can open a specific launch here (e.g. In Space → Next crewed launches).
+  const params = useLocalSearchParams<{ launch?: string; t?: string }>();
+  const [handled, setHandled] = useState<string | undefined>(undefined);
+  const fromRoute = params.launch && params.t !== handled ? params.launch : null;
+  useEffect(() => {
+    if (params.launch) scroll.current?.scrollTo({ y: 0, animated: true });
+  }, [params.launch, params.t]);
+  // Any own choice on this screen ends the request from the other screen.
+  const takeOver = () => {
+    if (fromRoute) setHandled(params.t);
+  };
 
   // Launches stay listed until they have lifted off.
   const upcoming = useMemo(
@@ -68,15 +80,19 @@ export default function LaunchesScreen() {
         .sort((a, b) => a.net - b.net),
     [data, now],
   );
-  const list = useMemo(() => upcoming.filter((l) => !filter || l.country === filter), [upcoming, filter]);
-  const top = list.find((l) => l.id === picked) ?? list[0];
+  const activeFilter = fromRoute ? null : filter;
+  const activePick = fromRoute ?? picked;
+  const list = useMemo(() => upcoming.filter((l) => !activeFilter || l.country === activeFilter), [upcoming, activeFilter]);
+  const top = list.find((l) => l.id === activePick) ?? list[0];
+  const pickedMissing = !!fromRoute && !!data && !list.some((l) => l.id === fromRoute);
 
   const left = top ? Math.max(0, Math.floor((top.net - now) / 1000)) : 0;
   const cd = { d: pad2(Math.floor(left / 86400)), h: pad2(Math.floor((left % 86400) / 3600)), m: pad2(Math.floor((left % 3600) / 60)), s: pad2(left % 60) };
   const isNext = top && top.id === list[0]?.id;
 
   const pickFilter = (c: Country | null) => {
-    setFilter(c === filter ? null : c);
+    takeOver();
+    setFilter(c === activeFilter ? null : c);
     setPicked(null);
   };
   const open = (url?: string) => {
@@ -100,7 +116,7 @@ export default function LaunchesScreen() {
             <View style={styles.heroText}>
               <View style={styles.row6}>
                 <Flag country={top.country} code={top.code} width={21} />
-                <Text style={styles.heroLabel}>{isNext ? (filter ? `Next launch from ${filter}` : 'Next launch') : 'Upcoming launch'}</Text>
+                <Text style={styles.heroLabel}>{isNext ? (activeFilter ? `Next launch from ${activeFilter}` : 'Next launch') : 'Upcoming launch'}</Text>
               </View>
               <Text style={styles.heroRocket} numberOfLines={2}>{top.rocket}</Text>
               <Text style={styles.heroLine} numberOfLines={2}>{top.mission}</Text>
@@ -146,16 +162,18 @@ export default function LaunchesScreen() {
       </View>
 
       {notice && <Text style={styles.notice} accessibilityLiveRegion="polite">{notice}</Text>}
-      <CountryFilter value={filter} onChange={pickFilter} />
+      {pickedMissing && <Text style={styles.notice}>That launch isn’t in the upcoming list yet, so the next launch is shown instead.</Text>}
+      <CountryFilter value={activeFilter} onChange={pickFilter} />
 
-      <Section title={filter ? `Upcoming from ${filter}` : 'Upcoming launches'} count={list.length} open={openList} onToggle={() => setOpenList(!openList)}>
+      <Section title={activeFilter ? `Upcoming from ${activeFilter}` : 'Upcoming launches'} count={list.length} open={openList} onToggle={() => setOpenList(!openList)}>
         {(showAll ? list : list.slice(0, 10)).map((l) => {
           const onTop = top?.id === l.id;
           return (
             <Pressable
               key={l.id}
               onPress={() => {
-                setPicked(picked === l.id ? null : l.id);
+                takeOver();
+                setPicked(activePick === l.id ? null : l.id);
                 scroll.current?.scrollTo({ y: 0, animated: true });
               }}
               accessibilityRole="button"
