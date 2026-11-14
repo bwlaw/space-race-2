@@ -1788,10 +1788,10 @@
   "mission": "EscaPADE"
  },
  "11-14": {
-  "year": 2025,
-  "country": "USA",
-  "rocket": "Atlas V 551",
-  "mission": "ViaSat-3 F2 (ViaSat-3 EMEA)"
+  "year": 2026,
+  "country": "Russia",
+  "rocket": "Soyuz 2.1b/Fregat-M",
+  "mission": "MKA Kinosputnik, KOEN and others"
  },
  "11-17": {
   "year": 2025,
