@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
-import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
+import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
 import { Chevron, Section } from '@/components/section';
@@ -60,9 +60,11 @@ type ItemProps = {
 
 function MiniHelmet() {
   return (
-    <Svg width={13} height={13} viewBox="0 0 40 40">
-      <Circle cx={20} cy={19} r={16} fill="#E9EEF7" />
-      <Path d="M8 18 C8 10 32 10 32 18 C32 26 26 29 20 29 C14 29 8 26 8 18 Z" fill="#1C5BB0" />
+    <Svg width={15} height={15} viewBox="0 0 40 40">
+      <Circle cx={20} cy={18} r={15} fill="#E9EEF7" />
+      <Path d="M9 17 C9 10 31 10 31 17 C31 24 26 27 20 27 C14 27 9 24 9 17 Z" fill="#1C5BB0" />
+      <Path d="M13 14 C15 12 19 11 22 12" stroke={C.skySoft} strokeWidth={2} fill="none" strokeLinecap="round" />
+      <Rect x={11} y={31} width={18} height={6} rx={3} fill="#B9C6DC" />
     </Svg>
   );
 }
@@ -389,29 +391,6 @@ export default function MapsScreen() {
         ))}
       </View>
 
-      {crewedPlaces.length > 0 && (
-        <Section title="Crewed landings" count={crewedPlaces.length} open={openCrewed} onToggle={() => setOpenCrewed(!openCrewed)}>
-          {crewedPlaces.map((p) => (
-            <ItemRow
-              key={p.name}
-              on={p.name === curKey}
-              onPress={() => pickRow(p.name)}
-              name={p.name}
-              sub={p.sub}
-              country={p.country}
-              code={p.code}
-              dot="crewed"
-              accent={C.orange}
-              kind={p.kind}
-              inUse={p.inUse}
-              note={p.note}
-              helmets={p.crew ? p.crew.surface.length + p.crew.orbit.length : 0}
-              crew={crewOf(p)}
-            />
-          ))}
-        </Section>
-      )}
-
       <Section
         title={isEarth ? 'Launch Sites' : 'Landers and Rovers'}
         count={listPlaces.length}
@@ -454,6 +433,29 @@ export default function MapsScreen() {
           ))}
         </Section>
       )}
+      {crewedPlaces.length > 0 && (
+        <Section title="Crewed landings" count={crewedPlaces.length} open={openCrewed} onToggle={() => setOpenCrewed(!openCrewed)}>
+          {crewedPlaces.map((p) => (
+            <ItemRow
+              key={p.name}
+              on={p.name === curKey}
+              onPress={() => pickRow(p.name)}
+              name={p.name}
+              sub={p.sub}
+              country={p.country}
+              code={p.code}
+              dot="crewed"
+              accent={C.orange}
+              kind={p.kind}
+              inUse={p.inUse}
+              note={p.note}
+              helmets={p.crew ? p.crew.surface.length + p.crew.orbit.length : 0}
+              crew={crewOf(p)}
+            />
+          ))}
+        </Section>
+      )}
+
       {flybys.length > 0 && (
         <Section title="Crewed flights around the Moon" count={flybys.length} open={openFlybys} onToggle={() => setOpenFlybys(!openFlybys)}>
           {flybys.map((o) => (
