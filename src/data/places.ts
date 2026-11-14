@@ -115,7 +115,7 @@ export const BODY_INFO: Record<'Moon' | 'Mars', InfoCard> = {
   },
 };
 
-/** Spacecraft orbiting Mars, drawn on a ring around the planet. `angle` is the start position in degrees. */
+/** Spacecraft orbiting Mars today, plus the historic firsts. */
 export const MARS_ORBITERS: (InfoCard & { key: string; country: Country | null; code?: string; sub: string; year: number; angle: number })[] = [
   { key: 'orb-odyssey', name: '2001 Mars Odyssey', country: 'USA', countries: ['USA'], sub: '2001', year: 2001, angle: 10, kind: 'Orbiter', inUse: 'In orbit since 2001', note: 'The longest-serving spacecraft at Mars, mapping minerals and water ice.' },
   { key: 'orb-express', name: 'Mars Express', country: 'Europe', countries: ['Europe'], sub: '2003', year: 2003, angle: 55, kind: 'Orbiter', inUse: 'In orbit since 2003', note: 'Europe’s first mission to Mars, mapping the planet in 3D.' },
@@ -125,6 +125,10 @@ export const MARS_ORBITERS: (InfoCard & { key: string; country: Country | null; 
   { key: 'orb-tgo', name: 'ExoMars Trace Gas Orbiter', country: 'Europe', countries: ['Europe'], sub: '2016', year: 2016, angle: 235, kind: 'Orbiter', inUse: 'In orbit since 2016', note: 'Sniffs out trace gases such as methane and relays data from rovers.' },
   { key: 'orb-hope', name: 'Hope', country: null, code: 'ARE', countries: [], codes: ['ARE'], sub: '2021', year: 2021, angle: 280, kind: 'Orbiter', inUse: 'In orbit since 2021', note: 'The United Arab Emirates’ weather satellite for the Martian atmosphere.' },
   { key: 'orb-tianwen', name: 'Tianwen-1', country: 'China', countries: ['China'], sub: '2021', year: 2021, angle: 325, kind: 'Orbiter', inUse: 'In orbit since 2021', note: 'Delivered the Zhurong rover and maps Mars from orbit.' },
+  { key: 'orb-mgs', name: 'Mars Global Surveyor', country: 'USA', countries: ['USA'], sub: '1997', year: 1997, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1997–2006', note: 'Mapped Mars in detail for nearly a decade and spotted gullies that may have been carved by water.' },
+  { key: 'orb-viking1', name: 'Viking 1 orbiter', country: 'USA', countries: ['USA'], sub: '1976', year: 1976, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1976–1980', note: 'Photographed the planet and relayed data from the Viking 1 lander, the first successful US landing on Mars.' },
+  { key: 'orb-mars3', name: 'Mars 3 orbiter', country: 'Russia', countries: ['Russia'], sub: '1971', year: 1971, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1971–1972', note: 'The Soviet orbiter that also delivered the first lander to touch down softly on Mars.' },
+  { key: 'orb-mariner9', name: 'Mariner 9', country: 'USA', countries: ['USA'], sub: '1971', year: 1971, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1971–1972', note: 'The first spacecraft to orbit another planet. It waited out a planet-wide dust storm, then mapped most of Mars.' },
 ];
 
 /** Spacecraft that orbit or have orbited the Moon: the active ones and the historic firsts. */
