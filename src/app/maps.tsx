@@ -227,9 +227,11 @@ export default function MapsScreen() {
     if (sel === 'ISS' || sel === 'Tiangong' || sel === 'Both') setSel(null);
   };
   // In the lists: the first tap opens the info, a second tap shows the place on the map.
-  const pickRow = (key: string) => {
-    if (sel === key) scroll.current?.scrollTo({ y: 0, animated: true });
-    else setSel(key);
+  // Rows without a dot on the map (orbiters, crewed flybys) simply close on the second tap.
+  const pickRow = (key: string, onMap = true) => {
+    if (sel !== key) setSel(key);
+    else if (onMap) scroll.current?.scrollTo({ y: 0, animated: true });
+    else setSel(null);
   };
 
   const pickBody = (b: Body) => {
@@ -419,7 +421,7 @@ export default function MapsScreen() {
             <ItemRow
               key={o.key}
               on={o.key === curKey}
-              onPress={() => pickRow(o.key)}
+              onPress={() => pickRow(o.key, false)}
               name={o.name}
               sub={o.sub}
               country={o.country}
@@ -462,7 +464,7 @@ export default function MapsScreen() {
             <ItemRow
               key={o.key}
               on={o.key === curKey}
-              onPress={() => pickRow(o.key)}
+              onPress={() => pickRow(o.key, false)}
               name={o.name}
               sub={o.sub}
               country={o.country}

@@ -19,6 +19,7 @@ Rhythm: one larger update about every two weeks after launch. Dates are targets,
 - Moon and Mars: when an orbiter that is still in use is selected, a small dot marks it on the dashed orbit ring.
   - Each orbiter has its own place on the ring, so switching between them moves the dot around the planet.
   - Only the selected orbiter is shown; with nothing selected, or a past orbiter selected, the ring stays empty.
+- Moon: when a crewed flight around the Moon is selected (Apollo 8, 10, 13, Artemis II), a small spacecraft is drawn on the ring around the Moon in the same way.
 
 ## 1.3 – Satellites (target: early January 2027)
 - Space Race: third metric "Satellites" (countries: active satellites per country; companies: SpaceX Starlink, Eutelsat OneWeb, Amazon Kuiper, Planet, Qianfan, Spire, Iridium, other companies).
