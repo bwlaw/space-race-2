@@ -124,7 +124,8 @@ async function main() {
   const lastWeek = Object.fromEntries(COUNTRIES.map((c) => [c, 0]));
   let lastWeekWorld = 0;
   for (const l of recent) {
-    if (!ATTEMPT.has(l.status?.abbrev) || Date.parse(l.net) < weekStart) continue;
+    // Every launch of the past seven days counts, including those still awaiting a confirmed result.
+    if (Date.parse(l.net) < weekStart || Date.parse(l.net) > now.getTime()) continue;
     lastWeekWorld += 1;
     const c = countryFromCode(l.pad?.country?.alpha_3_code ?? l.pad?.location?.country?.alpha_3_code);
     if (c) lastWeek[c] += 1;

@@ -50,13 +50,24 @@ type ItemProps = {
   country: Country | null;
   code?: string;
   dot: 'orange' | 'mars' | 'sky' | 'crewed';
+  helmets?: number;
+  crew?: string;
   accent: string;
   kind: string;
   inUse: string;
   note: string;
 };
 
-function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inUse, note }: ItemProps) {
+function MiniHelmet() {
+  return (
+    <Svg width={13} height={13} viewBox="0 0 40 40">
+      <Circle cx={20} cy={19} r={16} fill="#E9EEF7" />
+      <Path d="M8 18 C8 10 32 10 32 18 C32 26 26 29 20 29 C14 29 8 26 8 18 Z" fill="#1C5BB0" />
+    </Svg>
+  );
+}
+
+function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inUse, note, helmets = 0, crew }: ItemProps) {
   const dotStyle =
     dot === 'mars'
       ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.sky }
@@ -71,7 +82,14 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
       <View style={styles.itemHead}>
         <View style={[styles.rowDot, dotStyle]} />
         <Flag country={country} code={code} width={24} />
-        <Text style={styles.rowName} numberOfLines={on ? 2 : 1}>{name}</Text>
+        <View style={styles.nameWrap}>
+          <Text style={styles.rowNameFit} numberOfLines={on ? 2 : 1}>{name}</Text>
+          {helmets > 0 && (
+            <View style={styles.helmets} accessible accessibilityLabel={`${helmets} crew`}>
+              {Array.from({ length: helmets }, (_, i) => <MiniHelmet key={i} />)}
+            </View>
+          )}
+        </View>
         <Text style={styles.small}>{sub}</Text>
         <Chevron open={on} />
       </View>
@@ -79,6 +97,7 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
         <View style={styles.itemBody}>
           {!!kind && <Text style={styles.small}>{kind}</Text>}
           <Text style={styles.inUse}>{inUse}</Text>
+          {!!crew && <Text style={styles.crewLine}>{crew}</Text>}
           <Text style={styles.infoNote}>{note}</Text>
         </View>
       )}
@@ -95,6 +114,7 @@ export default function MapsScreen() {
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
   const [openFlybys, setOpenFlybys] = useState(true);
+  const [openCrewed, setOpenCrewed] = useState(true);
   const now = useNow(2000);
   const upcoming = useRemote('ll2-upcoming-v3', UPCOMING_URL, 30 * MINUTE, parseAllLaunches);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
@@ -114,10 +134,13 @@ export default function MapsScreen() {
   const accent = isMars ? C.sky : C.orange;
   const cardAccent = body === 'Moon' ? C.sky : accent;
   const orbiters = useMemo(() => [...(body === 'Mars' ? MARS_ORBITERS : body === 'Moon' ? MOON_ORBITERS : [])].sort((a, b) => b.year - a.year), [body]);
-  const flybys = body === 'Moon' ? MOON_FLYBYS : [];
+  const flybys = body === 'Moon' ? [...MOON_FLYBYS].sort((a, b) => b.year - a.year) : [];
   const orbiter = orbiters.find((o) => o.key === sel) ?? flybys.find((o) => o.key === sel) ?? null;
   const artemisSel = body === 'Moon' && sel === ARTEMIS_REGION.key;
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
+  // Crewed landings get their own list; the robotic ones stay under Landers and Rovers.
+  const crewedPlaces = places.filter((p) => p.crewed).sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
+  const listPlaces = places.filter((p) => !p.crewed);
   const showIss = isEarth && (orbit === 'ISS' || orbit === 'Both');
   const showTg = isEarth && (orbit === 'Tiangong' || orbit === 'Both');
   const stationSel = (sel === 'ISS' && showIss) || (sel === 'Tiangong' && showTg) ? (sel as 'ISS' | 'Tiangong') : null;
@@ -149,7 +172,10 @@ export default function MapsScreen() {
   // Each card shows the next launch from its site, so the title is the same before and after tapping.
   const cardTitle = 'Next launch';
   const cardFact = cardLaunch ? SITE_FACTS[cardLaunch.site] ?? fact : fact;
-  const artemisLaunch = body === 'Moon' ? (upcoming.data ?? []).filter((l) => l.net > now && /artemis/i.test(`${l.mission} ${l.rocket}`)).sort((a, b) => a.net - b.net)[0] ?? null : null;
+  const artemisLaunch = body === 'Moon' ? (upcoming.data ?? []).filter((l) => l.net > now && /artemis iv\b/i.test(`${l.mission} ${l.rocket}`)).sort((a, b) => a.net - b.net)[0] ?? null : null;
+  const crewOf = (p: { crew?: { surface: string[]; orbit: string[] } } | null) =>
+    p?.crew ? `On the Moon: ${p.crew.surface.join(' and ')}. In orbit: ${p.crew.orbit.join(', ')}.` : '';
+  const crewLine = place ? crewOf(place) : orbiter && 'crew' in orbiter && Array.isArray(orbiter.crew) ? `Crew: ${orbiter.crew.join(', ')}` : '';
   const info = place
       ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
       : orbiter
@@ -160,7 +186,7 @@ export default function MapsScreen() {
             countries: ['USA' as const],
             codes: [] as string[],
             kind: ARTEMIS_REGION.kind,
-            inUse: artemisLaunch ? `Next: ${artemisLaunch.mission}, ${relative(artemisLaunch.net, now)}` : 'Planned',
+            inUse: artemisLaunch ? `Launch ${relative(artemisLaunch.net, now)}` : ARTEMIS_REGION.inUse,
             note: ARTEMIS_REGION.note,
             color: C.sky,
           }
@@ -284,10 +310,10 @@ export default function MapsScreen() {
             <Pressable
               onPress={() => toggle(ARTEMIS_REGION.key)}
               accessibilityRole="button"
-              accessibilityLabel="Artemis landing region"
+              accessibilityLabel="Artemis IV, planned landing region"
               hitSlop={8}
-              style={[styles.label, { left: `${(ax / MAP_W) * 100}%`, top: `${((ay - 22) / MAP_H) * 100}%`, width: 120, marginLeft: -60, alignItems: 'center' }]}>
-              <Text style={[styles.labelText, { color: artemisSel ? C.skySoft : C.text }]}>Artemis region</Text>
+              style={[styles.label, { right: `${((MAP_W - ax + 40) / MAP_W) * 100}%`, top: `${((ay - 8) / MAP_H) * 100}%` }]}>
+              <Text style={[styles.labelText, { color: artemisSel ? C.skySoft : C.text }]}>Artemis IV</Text>
             </Pressable>
           );
         })()}
@@ -330,6 +356,7 @@ export default function MapsScreen() {
           <Text style={styles.infoName}>{info.name}</Text>
           {!!info.kind && <Text style={styles.small}>{info.kind}</Text>}
           <Text style={styles.inUse}>{info.inUse}</Text>
+          {!!crewLine && <Text style={styles.crewLine}>{crewLine}</Text>}
           <Text style={styles.infoNote}>{info.note}</Text>
         </View>
       </Pressable>
@@ -362,35 +389,35 @@ export default function MapsScreen() {
         ))}
       </View>
 
-      {body === 'Moon' && (
-        <View style={{ gap: 6 }}>
-          <Text style={styles.h2} accessibilityRole="header">Crewed landings</Text>
-          <View style={styles.chips}>
-            {places.filter((p) => p.crewed).sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((p) => {
-              const on = p.name === curKey;
-              return (
-                <Pressable
-                  key={p.name}
-                  onPress={() => toggle(p.name)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: on }}
-                  accessibilityLabel={p.name}
-                  style={[styles.chip, on && styles.chipOn]}>
-                  <Text style={[styles.chipText, on && { color: C.bg }]}>{p.name.replace('Apollo ', '')}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <Text style={styles.small}>12 people walked on the Moon on six Apollo missions between 1969 and 1972.</Text>
-        </View>
+      {crewedPlaces.length > 0 && (
+        <Section title="Crewed landings" count={crewedPlaces.length} open={openCrewed} onToggle={() => setOpenCrewed(!openCrewed)}>
+          {crewedPlaces.map((p) => (
+            <ItemRow
+              key={p.name}
+              on={p.name === curKey}
+              onPress={() => pickRow(p.name)}
+              name={p.name}
+              sub={p.sub}
+              country={p.country}
+              code={p.code}
+              dot="crewed"
+              accent={C.orange}
+              kind={p.kind}
+              inUse={p.inUse}
+              note={p.note}
+              helmets={p.crew ? p.crew.surface.length + p.crew.orbit.length : 0}
+              crew={crewOf(p)}
+            />
+          ))}
+        </Section>
       )}
 
       <Section
         title={isEarth ? 'Launch Sites' : 'Landers and Rovers'}
-        count={places.length}
+        count={listPlaces.length}
         open={openList}
         onToggle={() => setOpenList(!openList)}>
-        {places.map((p) => (
+        {listPlaces.map((p) => (
           <ItemRow
             key={p.name}
             on={p.name === curKey}
@@ -443,6 +470,8 @@ export default function MapsScreen() {
               kind={o.kind}
               inUse={o.inUse}
               note={o.note}
+              helmets={o.crew?.length ?? 0}
+              crew={o.crew ? `Crew: ${o.crew.join(', ')}` : ''}
             />
           ))}
         </Section>
@@ -455,6 +484,10 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   map: { width: '100%', aspectRatio: MAP_W / MAP_H, marginVertical: 4 },
   label: { position: 'absolute' },
+  nameWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rowNameFit: { flexShrink: 1, fontSize: 14, fontWeight: '600', color: C.text },
+  helmets: { flexDirection: 'row', gap: 2 },
+  crewLine: { fontSize: 13, color: C.text, lineHeight: 18 },
   chips: { flexDirection: 'row', gap: 6 },
   chip: { flex: 1, height: 36, borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: C.orange, borderColor: C.orange },
