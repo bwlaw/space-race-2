@@ -22,6 +22,8 @@ export type Place = {
   year: number;
   /** False: only a dot on the map, the name shows when selected. */
   label?: boolean;
+  /** A landing with people on board (drawn as a white dot with an orange ring). */
+  crewed?: boolean;
 };
 
 export const PLACES: Record<Body, Place[]> = {
@@ -44,7 +46,12 @@ export const PLACES: Record<Body, Place[]> = {
     { name: 'Tanegashima', country: 'Japan', lon: 131, lat: 30.4, dx: 8, dy: 10, anchor: 'start', sub: 'since 1975', kind: 'Launch site, Japan', inUse: 'In use since 1975', note: 'Japan’s main spaceport, where H3 rockets lift off. It is often called the most beautiful launch site in the world.', year: 1975 },
   ],
   Moon: [
-    { name: 'Apollo 11', country: 'USA', lon: 23.5, lat: 0.7, dx: 9, dy: -2, anchor: 'start', sub: '1969', kind: 'Crewed lander', inUse: 'On the surface 20–21 July 1969', note: 'First humans on the Moon, in the Sea of Tranquillity. Neil Armstrong and Buzz Aldrin walked on the surface for about two and a half hours.', year: 1969 },
+    { name: 'Apollo 12', country: 'USA', lon: -23.4, lat: -3.0, dx: -9, dy: 4, anchor: 'end', sub: '1969', kind: 'Crewed landing', inUse: 'On the surface 19–21 November 1969', note: 'Landed right next to the robotic Surveyor 3 probe, and the crew brought parts of it back to Earth.', year: 1969, label: false, crewed: true },
+    { name: 'Apollo 14', country: 'USA', lon: -17.5, lat: -3.6, dx: 9, dy: 9, anchor: 'start', sub: '1971', kind: 'Crewed landing', inUse: 'On the surface 5–6 February 1971', note: 'Alan Shepard, the first American in space, hit two golf balls on the Moon.', year: 1971, label: false, crewed: true },
+    { name: 'Apollo 15', country: 'USA', lon: 3.6, lat: 26.1, dx: 0, dy: -10, anchor: 'middle', sub: '1971', kind: 'Crewed landing', inUse: 'On the surface 30 July – 2 August 1971', note: 'The first mission with the Lunar Roving Vehicle. The crew drove almost 28 km near the Hadley Rille.', year: 1971, label: false, crewed: true },
+    { name: 'Apollo 16', country: 'USA', lon: 15.5, lat: -9.0, dx: -9, dy: 4, anchor: 'end', sub: '1972', kind: 'Crewed landing', inUse: 'On the surface 21–24 April 1972', note: 'The first landing in the lunar highlands, where the crew spent almost three days.', year: 1972, label: false, crewed: true },
+    { name: 'Apollo 17', country: 'USA', lon: 30.8, lat: 20.2, dx: 9, dy: -4, anchor: 'start', sub: '1972', kind: 'Crewed landing', inUse: 'On the surface 11–14 December 1972', note: 'The last crewed landing so far. Eugene Cernan was the last person to walk on the Moon.', year: 1972, label: false, crewed: true },
+    { name: 'Apollo 11', country: 'USA', lon: 23.5, lat: 0.7, dx: 9, dy: -2, anchor: 'start', sub: '1969', kind: 'Crewed lander', inUse: 'On the surface 20–21 July 1969', note: 'First humans on the Moon, in the Sea of Tranquillity. Neil Armstrong and Buzz Aldrin walked on the surface for about two and a half hours.', year: 1969 , crewed: true },
     { name: 'Chang’e 5', country: 'China', lon: -51.9, lat: 43.1, dx: 0, dy: -10, anchor: 'middle', sub: '2020', kind: 'Lander and sample return', inUse: 'In use 1–3 December 2020', note: 'Brought fresh Moon samples to Earth from the Ocean of Storms. Its 1.7 kg of rock and soil were the first lunar samples since 1976.', year: 2020 },
     { name: 'SLIM', country: 'Japan', lon: 25.2, lat: -13.3, dx: 9, dy: 9, anchor: 'start', sub: '2024', kind: 'Lander', inUse: 'In use January–August 2024', note: 'Japan’s precision lander touched down within about 100 m of its target. It ended up upside down but still sent images and survived several lunar nights.', year: 2024 },
     { name: 'Chandrayaan-3', country: 'India', lon: 32.3, lat: -69.4, dx: 9, dy: 4, anchor: 'start', sub: '2023', kind: 'Lander and rover', inUse: 'In use August–September 2023', note: 'Vikram and the Pragyan rover landed near the lunar south pole. Pragyan drove about 100 m and detected sulphur in the lunar soil.', year: 2023 },
@@ -64,7 +71,7 @@ export const BODY_STATS: Record<Body | 'ISS' | 'Tiangong' | 'Both', { label: str
   Tiangong: [{ label: 'Tiangong speed', value: '~28,000', unit: 'km/h' }, { label: 'Altitude', value: '~390', unit: 'km' }, { label: 'Orbit tilt', value: '41.5°', unit: 'to equator' }],
   Both: [{ label: 'ISS altitude', value: '~400', unit: 'km' }, { label: 'Tiangong', value: '~390', unit: 'km' }, { label: 'One orbit', value: '~92', unit: 'minutes each' }],
   Earth: [],
-  Moon: [{ label: 'Distance', value: '~384,000', unit: 'km' }, { label: 'Travel time', value: '~3', unit: 'days' }, { label: 'Sites shown', value: '5', unit: 'landings' }],
+  Moon: [{ label: 'Distance', value: '~384,000', unit: 'km' }, { label: 'Travel time', value: '~3', unit: 'days' }, { label: 'Sites shown', value: '10', unit: 'landings' }],
   Mars: [{ label: 'Distance', value: '55–400', unit: 'million km' }, { label: 'Travel time', value: '7–9', unit: 'months' }, { label: 'Sites shown', value: '5', unit: 'landings' }],
 };
 
@@ -132,3 +139,18 @@ export const MOON_ORBITERS: typeof MARS_ORBITERS = [
   { key: 'moon-lunarorbiter1', name: 'Lunar Orbiter 1', country: 'USA', countries: ['USA'], sub: '1966', year: 1966, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1966', note: 'The first of five US orbiters that photographed the Moon to find safe landing sites for Apollo.' },
   { key: 'moon-luna10', name: 'Luna 10', country: 'Russia', countries: ['Russia'], sub: '1966', year: 1966, angle: 0, kind: 'Orbiter', inUse: 'In orbit 1966', note: 'The first spacecraft ever to orbit the Moon, launched by the Soviet Union.' },
 ];
+
+/** Crewed missions that flew around the Moon without landing. */
+export const MOON_FLYBYS: typeof MARS_ORBITERS = [
+  { key: 'flyby-apollo13', name: 'Apollo 13', country: 'USA', countries: ['USA'], sub: '1970', year: 1970, angle: 0, kind: 'Crewed flyby', inUse: 'April 1970', note: 'An explosion on the way out cancelled the landing. The crew looped around the Moon and set a record at the time for the farthest humans have travelled from Earth.' },
+  { key: 'flyby-apollo10', name: 'Apollo 10', country: 'USA', countries: ['USA'], sub: '1969', year: 1969, angle: 0, kind: 'Crewed flight in lunar orbit', inUse: 'May 1969', note: 'The dress rehearsal for the landing: the lunar module flew down to about 15 km above the surface.' },
+  { key: 'flyby-apollo8', name: 'Apollo 8', country: 'USA', countries: ['USA'], sub: '1968', year: 1968, angle: 0, kind: 'Crewed flight in lunar orbit', inUse: 'December 1968', note: 'The first humans to orbit the Moon, who photographed Earth rising over the lunar horizon.' },
+];
+
+/** The region near the south pole planned for NASA's next crewed landings. */
+export const ARTEMIS_REGION = {
+  key: 'artemis',
+  name: 'Artemis landing region',
+  kind: 'Planned crewed landings',
+  note: 'NASA plans to land astronauts near the lunar south pole, where ice may be hidden in craters that never see sunlight.',
+};

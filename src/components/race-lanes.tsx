@@ -3,7 +3,7 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-nativ
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 import type { Country } from '@/data/countries';
 import { formatNumber, type Standing } from '@/lib/race';
 
@@ -96,5 +96,5 @@ const styles = StyleSheet.create({
   dash: { position: 'absolute', left: 0, right: 0, top: 16, borderTopWidth: 1, borderStyle: 'dashed', borderColor: C.line },
   trail: { position: 'absolute', left: 0, top: 15.5, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,159,67,0.7)' },
   rocket: { position: 'absolute', left: 0, top: 7 },
-  value: { width: 52, textAlign: 'right', fontFamily: F.display, fontSize: 15, color: C.text, fontVariant: ['tabular-nums'] },
+  value: { width: 52, textAlign: 'right', fontWeight: '700', fontSize: 15, color: C.text, fontVariant: ['tabular-nums'] },
 });

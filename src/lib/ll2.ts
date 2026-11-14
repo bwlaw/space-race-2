@@ -169,3 +169,52 @@ export function relative(ms: number, now = Date.now()): string {
   const text = abs < 3600000 ? 'less than an hour' : h < 48 ? `${h} h` : `${d} days`;
   return diff >= 0 ? `in ${text}` : `${text} ago`;
 }
+
+/** Docking events of the last year; those without a departure are still at a station. */
+export function dockedUrl(now = Date.now()): string {
+  const since = new Date(now - 365 * 86400000).toISOString().slice(0, 10);
+  return `${BASE}/docking_events/?limit=60&docking__gte=${since}`;
+}
+
+/** Crewed launches still to come. */
+export const CREWED_URL = `${BASE}/launches/upcoming/?limit=10&mode=normal&is_crewed=true&include_suborbital=false`;
+
+export type DockedCraft = { id: number; name: string; country: Country | null; station: 'ISS' | 'Tiangong'; docked: number; port: string };
+
+const CREWED_CRAFT: [RegExp, Country][] = [
+  [/crew dragon/i, 'USA'],
+  [/starliner/i, 'USA'],
+  [/orion/i, 'USA'],
+  [/soyuz/i, 'Russia'],
+  [/shenzhou/i, 'China'],
+  [/mengzhou/i, 'China'],
+  [/gaganyaan/i, 'India'],
+];
+
+type RawDocking = {
+  id: number;
+  docking: string;
+  departure: string | null;
+  docking_location?: { name?: string; spacestation?: { name?: string } };
+  space_station_target?: { name?: string };
+  flight_vehicle_chaser?: { spacecraft?: { name?: string; spacecraft_config?: { name?: string } } } | null;
+};
+
+/** Crewed spacecraft currently docked at the ISS or Tiangong. */
+export function parseDocked(raw: unknown): DockedCraft[] {
+  const results = ((raw as { results?: RawDocking[] })?.results ?? []) as RawDocking[];
+  if (!Array.isArray(results)) throw new Error('Bad data');
+  const out: DockedCraft[] = [];
+  for (const d of results) {
+    if (d.departure) continue;
+    const craft = d.flight_vehicle_chaser?.spacecraft;
+    const label = `${craft?.spacecraft_config?.name ?? ''} ${craft?.name ?? ''}`;
+    const match = CREWED_CRAFT.find(([re]) => re.test(label));
+    if (!craft?.name || !match || /cargo/i.test(label)) continue;
+    const stationName = d.space_station_target?.name ?? d.docking_location?.spacestation?.name ?? '';
+    const station = /tiangong/i.test(stationName) ? 'Tiangong' : /international|iss/i.test(stationName) ? 'ISS' : null;
+    if (!station) continue;
+    out.push({ id: d.id, name: craft.name, country: match[1], station, docked: Date.parse(d.docking), port: d.docking_location?.name ?? '' });
+  }
+  return out.sort((a, b) => a.docked - b.docked);
+}

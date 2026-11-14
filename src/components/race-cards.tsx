@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { Flag } from '@/components/flag';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 import type { Country } from '@/data/countries';
 import { formatNumber, type MilestoneRow } from '@/lib/race';
 
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   future: { backgroundColor: 'transparent', borderStyle: 'dashed', borderColor: '#2C4C80' },
   badge: { width: 46, height: 30, borderRadius: 8, backgroundColor: 'rgba(255,159,67,0.16)', alignItems: 'center', justifyContent: 'center' },
   badgeFuture: { backgroundColor: 'transparent', borderWidth: 1, borderColor: C.sky },
-  badgeText: { fontFamily: F.display, fontSize: 15, color: C.orangeSoft },
+  badgeText: { fontWeight: '700', fontSize: 15, color: C.orangeSoft, fontVariant: ['tabular-nums'] },
   body: { flex: 1, gap: 4 },
   title: { fontSize: 15, fontWeight: '600', color: C.text },
   latest: { fontSize: 12, color: C.orangeSoft },
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   statDivider: { borderBottomWidth: 1, borderBottomColor: C.lineSoft },
   statName: { fontSize: 14, fontWeight: '600', color: C.text },
   statCol: { width: 64, alignItems: 'flex-end' },
-  statNum: { fontFamily: F.display, fontSize: 16, color: C.text, fontVariant: ['tabular-nums'] },
+  statNum: { fontWeight: '700', fontSize: 16, color: C.text, fontVariant: ['tabular-nums'] },
   outcome: { fontSize: 12, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
   ok: { backgroundColor: 'rgba(61,220,151,0.15)', color: C.green },
   fail: { backgroundColor: 'rgba(255,107,107,0.15)', color: C.red },

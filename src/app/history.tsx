@@ -10,7 +10,7 @@ import { CountryFilter } from '@/components/country-filter';
 import { Section } from '@/components/section';
 import { Flag } from '@/components/flag';
 import { Pill, Screen } from '@/components/screen';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 import { COUNTRIES, type Country } from '@/data/countries';
 import { COUNTRY_STATS, DAY_FACTS, displayCountry } from '@/data/history';
 import { MILESTONES } from '@/data/race';
@@ -227,7 +227,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   dayCard: { flexDirection: 'row', gap: 14, alignItems: 'center', padding: 14, paddingHorizontal: 16, borderRadius: 18, borderWidth: 1, borderColor: C.line, backgroundColor: C.card },
   dateTile: { width: 64, height: 72, borderRadius: 12, backgroundColor: C.sky, alignItems: 'center', justifyContent: 'center' },
-  dateNum: { fontFamily: F.display, fontSize: 30, lineHeight: 32, color: C.bg },
+  dateNum: { fontWeight: '700', fontSize: 30, lineHeight: 32, color: C.bg, fontVariant: ['tabular-nums'] },
   dateMonth: { fontSize: 12, fontWeight: '600', color: C.bg },
   factText: { fontSize: 16, fontWeight: '600', lineHeight: 21, color: C.text },
   row6: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -238,20 +238,20 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   tile: { width: '48%', flexGrow: 1, padding: 12, paddingHorizontal: 14, borderRadius: 16, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, gap: 2 },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  big: { fontFamily: F.display, fontSize: 28, color: C.text, fontVariant: ['tabular-nums'] },
-  mid: { fontFamily: F.display, fontSize: 24, color: C.text },
+  big: { fontWeight: '700', fontSize: 28, color: C.text, fontVariant: ['tabular-nums'] },
+  mid: { fontWeight: '700', fontSize: 24, color: C.text, fontVariant: ['tabular-nums'] },
   tm: { padding: 14, paddingHorizontal: 16, borderRadius: 18, borderWidth: 1, borderColor: C.line, backgroundColor: C.panel, gap: 8 },
   tmHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   tmTitle: { fontSize: 14, fontWeight: '600', color: C.text },
-  year: { fontFamily: F.display, fontSize: 30, color: C.sky, fontVariant: ['tabular-nums'] },
+  year: { fontWeight: '700', fontSize: 30, color: C.sky, fontVariant: ['tabular-nums'] },
   bar: { flexDirection: 'row', alignItems: 'center', gap: 8, height: 40, paddingHorizontal: 6, borderRadius: 10, borderWidth: 1, borderColor: 'transparent' },
   barSel: { borderColor: C.sky, backgroundColor: 'rgba(90,176,255,0.14)' },
   barName: { width: 58, fontSize: 13, fontWeight: '600', color: C.text },
   barTrack: { flex: 1, height: 10, borderRadius: 999, backgroundColor: C.lineSoft, overflow: 'hidden' },
   barFill: { height: '100%', borderRadius: 999 },
-  barPts: { width: 34, textAlign: 'right', fontFamily: F.display, fontSize: 14, color: C.text, fontVariant: ['tabular-nums'] },
+  barPts: { width: 34, textAlign: 'right', fontWeight: '700', fontSize: 14, color: C.text, fontVariant: ['tabular-nums'] },
   event: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderTopWidth: 1, borderTopColor: C.lineSoft },
-  eventYear: { width: 44, fontFamily: F.display, fontSize: 15, color: C.orange, fontVariant: ['tabular-nums'] },
+  eventYear: { width: 44, fontWeight: '700', fontSize: 15, color: C.orange, fontVariant: ['tabular-nums'] },
   eventName: { flex: 1, fontSize: 14, fontWeight: '600', lineHeight: 18, color: C.text },
   eventPts: { width: 36, textAlign: 'right', fontSize: 13, fontWeight: '700', color: C.orangeSoft },
   eventEmpty: { paddingVertical: 8, borderTopWidth: 1, borderTopColor: C.lineSoft },

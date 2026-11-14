@@ -9,7 +9,7 @@ import type { Country } from '@/data/countries';
 import { LivePill, Screen } from '@/components/screen';
 import { Segmented } from '@/components/toggles';
 import { C, F } from '@/constants/theme';
-import { BODY_INFO, BODY_STATS, MARS_ORBITERS, MOON_ORBITERS, PLACES, type Body } from '@/data/places';
+import { ARTEMIS_REGION, BODY_INFO, BODY_STATS, MARS_ORBITERS, MOON_FLYBYS, MOON_ORBITERS, PLACES, type Body } from '@/data/places';
 import { GENERAL_FACTS, SITE_FACTS, siteFor } from '@/data/site-facts';
 import { parseAllLaunches, relative, UPCOMING_URL } from '@/lib/ll2';
 import { MAP_H, MAP_W, ORBITS, project, stationAt, trackPath } from '@/lib/maps';
@@ -49,7 +49,7 @@ type ItemProps = {
   sub: string;
   country: Country | null;
   code?: string;
-  dot: 'orange' | 'mars' | 'sky';
+  dot: 'orange' | 'mars' | 'sky' | 'crewed';
   accent: string;
   kind: string;
   inUse: string;
@@ -62,7 +62,9 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
       ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.sky }
       : dot === 'sky'
         ? { backgroundColor: C.sky, borderWidth: 1.5, borderColor: C.text }
-        : { backgroundColor: C.orange };
+        : dot === 'crewed'
+          ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.orange }
+          : { backgroundColor: C.orange };
   const tint = accent === C.sky ? 'rgba(90,176,255,0.12)' : 'rgba(255,159,67,0.12)';
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ expanded: on }} style={[styles.item, on && { borderColor: accent, backgroundColor: tint }]}>
@@ -92,6 +94,7 @@ export default function MapsScreen() {
   const [sel, setSel] = useState<string | null>(null);
   const [openList, setOpenList] = useState(true);
   const [openOrbiters, setOpenOrbiters] = useState(true);
+  const [openFlybys, setOpenFlybys] = useState(true);
   const now = useNow(2000);
   const upcoming = useRemote('ll2-upcoming-v3', UPCOMING_URL, 30 * MINUTE, parseAllLaunches);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
@@ -111,13 +114,15 @@ export default function MapsScreen() {
   const accent = isMars ? C.sky : C.orange;
   const cardAccent = body === 'Moon' ? C.sky : accent;
   const orbiters = useMemo(() => [...(body === 'Mars' ? MARS_ORBITERS : body === 'Moon' ? MOON_ORBITERS : [])].sort((a, b) => b.year - a.year), [body]);
-  const orbiter = orbiters.find((o) => o.key === sel) ?? null;
+  const flybys = body === 'Moon' ? MOON_FLYBYS : [];
+  const orbiter = orbiters.find((o) => o.key === sel) ?? flybys.find((o) => o.key === sel) ?? null;
+  const artemisSel = body === 'Moon' && sel === ARTEMIS_REGION.key;
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
   const showIss = isEarth && (orbit === 'ISS' || orbit === 'Both');
   const showTg = isEarth && (orbit === 'Tiangong' || orbit === 'Both');
   const stationSel = (sel === 'ISS' && showIss) || (sel === 'Tiangong' && showTg) ? (sel as 'ISS' | 'Tiangong') : null;
   const place = places.find((p) => p.name === sel) ?? null;
-  const curKey = stationSel ?? orbiter?.key ?? place?.name ?? null;
+  const curKey = stationSel ?? orbiter?.key ?? (artemisSel ? ARTEMIS_REGION.key : null) ?? place?.name ?? null;
   // With nothing selected, the Earth card shows the next launch and a fact about its site.
   // Launches from different sites within three days of the next one take turns, one per day.
   const candidates = useMemo(() => {
@@ -144,10 +149,21 @@ export default function MapsScreen() {
   // Each card shows the next launch from its site, so the title is the same before and after tapping.
   const cardTitle = 'Next launch';
   const cardFact = cardLaunch ? SITE_FACTS[cardLaunch.site] ?? fact : fact;
+  const artemisLaunch = body === 'Moon' ? (upcoming.data ?? []).filter((l) => l.net > now && /artemis/i.test(`${l.mission} ${l.rocket}`)).sort((a, b) => a.net - b.net)[0] ?? null : null;
   const info = place
       ? { name: place.name, countries: place.country ? [place.country] : [], codes: place.code ? [place.code] : [], kind: place.kind, inUse: place.inUse, note: place.note, color: cardAccent }
       : orbiter
         ? { ...orbiter, color: C.sky }
+      : artemisSel
+        ? {
+            name: ARTEMIS_REGION.name,
+            countries: ['USA' as const],
+            codes: [] as string[],
+            kind: ARTEMIS_REGION.kind,
+            inUse: artemisLaunch ? `Next: ${artemisLaunch.mission}, ${relative(artemisLaunch.net, now)}` : 'Planned',
+            note: ARTEMIS_REGION.note,
+            color: C.sky,
+          }
       : { ...BODY_INFO[body === 'Mars' ? 'Mars' : 'Moon'], color: cardAccent };
   const iss = issFix ? project(issFix.lon, issFix.lat) : stationAt(t - 180, ORBITS.ISS.inclination, ORBITS.ISS.offset);
   const tg = tgFix ? project(tgFix.lon, tgFix.lat) : stationAt(((t + 150) % 360) - 180, ORBITS.Tiangong.inclination, ORBITS.Tiangong.offset);
@@ -200,6 +216,10 @@ export default function MapsScreen() {
       <View style={styles.map}>
         <Image source={MAP_IMAGES[body]} style={styles.fill} contentFit="contain" accessibilityLabel={`Map of ${body}`} />
         <Svg width="100%" height="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={StyleSheet.absoluteFill} pointerEvents="none">
+          {body === 'Moon' && (() => {
+            const [ax, ay] = project(0, -84);
+            return <Ellipse cx={ax} cy={ay} rx={34} ry={6} fill={artemisSel ? 'rgba(90,176,255,0.18)' : 'none'} stroke={C.sky} strokeWidth={1.2} strokeDasharray="3 3" />;
+          })()}
           {!isEarth && <Ellipse cx={175} cy={120} rx={172} ry={115} fill="none" stroke={C.sky} strokeOpacity={0.35} strokeWidth={1} strokeDasharray="3 5" />}
           {showIss && <Path d={issTrack} fill="none" stroke={ORBITS.ISS.color} strokeWidth={2} strokeDasharray="5 4" />}
           {showTg && <Path d={tgTrack} fill="none" stroke={ORBITS.Tiangong.color} strokeWidth={2} strokeDasharray="5 4" />}
@@ -234,6 +254,8 @@ export default function MapsScreen() {
                   { width: size, height: size, borderRadius: 999 },
                   isMars
                     ? { backgroundColor: C.text, borderWidth: 2.5, borderColor: C.sky, boxShadow: `0 0 0 ${on ? 5 : 4}px rgba(90,176,255,${on ? 0.35 : 0.2})` }
+                    : p.crewed
+                    ? { backgroundColor: C.text, borderWidth: 3, borderColor: C.orange, boxShadow: on ? '0 0 0 4px rgba(255,159,67,0.35)' : undefined }
                     : { backgroundColor: C.orange, borderWidth: 2, borderColor: on ? '#FFFFFF' : C.bg, boxShadow: on ? '0 0 0 4px rgba(255,159,67,0.35)' : undefined },
                 ]}
               />
@@ -256,6 +278,19 @@ export default function MapsScreen() {
             </Pressable>
           );
         })}
+        {body === 'Moon' && (() => {
+          const [ax, ay] = project(0, -84);
+          return (
+            <Pressable
+              onPress={() => toggle(ARTEMIS_REGION.key)}
+              accessibilityRole="button"
+              accessibilityLabel="Artemis landing region"
+              hitSlop={8}
+              style={[styles.label, { left: `${(ax / MAP_W) * 100}%`, top: `${((ay - 22) / MAP_H) * 100}%`, width: 120, marginLeft: -60, alignItems: 'center' }]}>
+              <Text style={[styles.labelText, { color: artemisSel ? C.skySoft : C.text }]}>Artemis region</Text>
+            </Pressable>
+          );
+        })()}
       </View>
 
       {showNext ? (
@@ -283,9 +318,9 @@ export default function MapsScreen() {
       ) : (
       <Pressable
         onPress={() => setSel(null)}
-        disabled={!place && !orbiter}
-        accessibilityRole={place || orbiter ? 'button' : undefined}
-        accessibilityHint={place || orbiter ? 'Closes this card' : undefined}
+        disabled={!place && !orbiter && !artemisSel}
+        accessibilityRole={place || orbiter || artemisSel ? 'button' : undefined}
+        accessibilityHint={place || orbiter || artemisSel ? 'Closes this card' : undefined}
         style={[styles.info, { borderColor: info.color }]}>
         <View style={{ flex: 1, gap: 3 }}>
           <View style={styles.infoFlags}>
@@ -327,6 +362,29 @@ export default function MapsScreen() {
         ))}
       </View>
 
+      {body === 'Moon' && (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.h2} accessibilityRole="header">Crewed landings</Text>
+          <View style={styles.chips}>
+            {places.filter((p) => p.crewed).sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })).map((p) => {
+              const on = p.name === curKey;
+              return (
+                <Pressable
+                  key={p.name}
+                  onPress={() => toggle(p.name)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={p.name}
+                  style={[styles.chip, on && styles.chipOn]}>
+                  <Text style={[styles.chipText, on && { color: C.bg }]}>{p.name.replace('Apollo ', '')}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={styles.small}>12 people walked on the Moon on six Apollo missions between 1969 and 1972.</Text>
+        </View>
+      )}
+
       <Section
         title={isEarth ? 'Launch Sites' : 'Landers and Rovers'}
         count={places.length}
@@ -341,7 +399,7 @@ export default function MapsScreen() {
             sub={p.sub}
             country={p.country}
             code={p.code}
-            dot={isMars ? 'mars' : 'orange'}
+            dot={isMars ? 'mars' : p.crewed ? 'crewed' : 'orange'}
             accent={accent}
             kind={p.kind}
             inUse={p.inUse}
@@ -369,6 +427,26 @@ export default function MapsScreen() {
           ))}
         </Section>
       )}
+      {flybys.length > 0 && (
+        <Section title="Crewed flights around the Moon" count={flybys.length} open={openFlybys} onToggle={() => setOpenFlybys(!openFlybys)}>
+          {flybys.map((o) => (
+            <ItemRow
+              key={o.key}
+              on={o.key === curKey}
+              onPress={() => pickRow(o.key)}
+              name={o.name}
+              sub={o.sub}
+              country={o.country}
+              code={o.code}
+              dot="crewed"
+              accent={C.orange}
+              kind={o.kind}
+              inUse={o.inUse}
+              note={o.note}
+            />
+          ))}
+        </Section>
+      )}
     </Screen>
   );
 }
@@ -377,6 +455,10 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   map: { width: '100%', aspectRatio: MAP_W / MAP_H, marginVertical: 4 },
   label: { position: 'absolute' },
+  chips: { flexDirection: 'row', gap: 6 },
+  chip: { flex: 1, height: 36, borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
+  chipOn: { backgroundColor: C.orange, borderColor: C.orange },
+  chipText: { fontSize: 15, fontWeight: '700', color: C.text, fontVariant: ['tabular-nums'] },
   labelText: { fontSize: 10, fontWeight: '600', textShadowColor: C.bg, textShadowRadius: 3, textShadowOffset: { width: 0, height: 0 } },
   stationHit: { width: 36, height: 36, marginLeft: -18, marginTop: -18 },
   hit: { position: 'absolute', width: 28, height: 28, marginLeft: -14, marginTop: -14, alignItems: 'center', justifyContent: 'center' },
@@ -397,7 +479,7 @@ const styles = StyleSheet.create({
   orbitText: { fontSize: 13, fontWeight: '600' },
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, padding: 10, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.card },
-  statValue: { fontFamily: F.display, fontSize: 18, color: C.text },
+  statValue: { fontWeight: '700', fontSize: 18, color: C.text, fontVariant: ['tabular-nums'] },
   h2: { fontFamily: F.display, fontSize: 22, color: C.text, marginTop: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(13,33,71,0.8)' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44, marginTop: 6 },

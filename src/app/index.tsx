@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   liveText: { fontSize: 13, fontWeight: '600', color: C.text },
   countRow: { position: 'absolute', left: 14, right: 14, bottom: 14, flexDirection: 'row', gap: 6 },
   countTile: { flex: 1, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(6,18,43,0.78)', alignItems: 'center' },
-  countNum: { fontFamily: F.display, fontSize: 22, color: C.text, fontVariant: ['tabular-nums'] },
+  countNum: { fontWeight: '700', fontSize: 22, color: C.text, fontVariant: ['tabular-nums'] },
   countLabel: { fontSize: 11, color: C.muted },
   bell: { width: 60, borderRadius: 10, backgroundColor: 'rgba(90,176,255,0.55)', alignItems: 'center', justifyContent: 'center' },
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, paddingHorizontal: 14, borderRadius: 14, borderWidth: 1, borderColor: C.line, backgroundColor: C.card },

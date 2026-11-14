@@ -6,13 +6,15 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { Flag } from '@/components/flag';
 import { OrbitingStation } from '@/components/orbiting-station';
 import { LivePill, Screen } from '@/components/screen';
+import { Section } from '@/components/section';
 import { Segmented } from '@/components/toggles';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 import type { Country } from '@/data/countries';
 import type { Station } from '@/data/crew';
 import { STATIONS } from '@/data/places';
-import { EXPEDITIONS_URL, parseExpeditions } from '@/lib/ll2';
+import { CREWED_URL, dockedUrl, EXPEDITIONS_URL, parseAllLaunches, parseDocked, parseExpeditions, relative } from '@/lib/ll2';
 import { HOUR, useRemote } from '@/lib/remote';
+import { dateTime } from '@/lib/time';
 import { fixAt, parseTle, satrecFrom, TLE_URLS } from '@/lib/stations';
 
 const ORBIT_ART = require('@/assets/images/scenes/orbit-bg.png');
@@ -29,8 +31,13 @@ function Helmet() {
 }
 
 export default function SpaceScreen() {
-  const [station, setStation] = useState<Station>('ISS');
+  const [view, setView] = useState<Station | 'Spacecraft'>('ISS');
+  const station: Station = view === 'Tiangong' ? 'Tiangong' : 'ISS';
   const [open, setOpen] = useState<number>(0);
+  const [openLaunches, setOpenLaunches] = useState(true);
+  const [dockUrl] = useState(() => dockedUrl());
+  const docked = useRemote('ll2-docked', dockUrl, HOUR, parseDocked);
+  const crewed = useRemote('ll2-crewed', CREWED_URL, HOUR, parseAllLaunches);
 
   const { data, state } = useRemote('ll2-crew', EXPEDITIONS_URL, HOUR, parseExpeditions);
   const [now] = useState(() => Date.now());
@@ -58,10 +65,12 @@ export default function SpaceScreen() {
     return [...counts.values()].sort((a, b) => b.n - a.n);
   }, [everyone]);
 
-  const pickStation = (s: Station) => {
-    setStation(s);
+  const pickView = (v: Station | 'Spacecraft') => {
+    setView(v);
     setOpen(0);
   };
+  const craft = docked.data ?? [];
+  const nextCrewed = (crewed.data ?? []).filter((l) => l.net > now - 3600000).sort((a, b) => a.net - b.net);
 
   return (
     <Screen title="In Space" right={<LivePill state={state} />}>
@@ -86,10 +95,38 @@ export default function SpaceScreen() {
         options={[
           { value: 'ISS', label: `ISS (${count('ISS')})` },
           { value: 'Tiangong', label: `Tiangong (${count('Tiangong')})` },
+          { value: 'Spacecraft', label: `Spacecraft (${craft.length})` },
         ]}
-        value={station}
-        onChange={pickStation}
+        value={view}
+        onChange={pickView}
       />
+      {view === 'Spacecraft' ? (
+        <View style={{ gap: 8 }}>
+          {craft.map((c) => {
+            const days = Math.max(0, Math.floor((now - c.docked) / 86400000));
+            return (
+              <View key={c.id} style={styles.card} accessible accessibilityLabel={`${c.name}, docked at ${c.station}, ${days} days`}>
+                <View style={styles.cardRow}>
+                  <Flag country={c.country} width={30} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.name}>{c.name}</Text>
+                    <Text style={styles.role}>{`Docked at ${c.station === 'ISS' ? 'the ISS' : 'Tiangong'}${c.port ? `, ${c.port}` : ''}`}</Text>
+                  </View>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={styles.days}>{days}</Text>
+                    <Text style={styles.tiny}>days docked</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+          {craft.length === 0 && (
+            <Text style={styles.role}>{docked.state === 'loading' ? 'Loading spacecraft…' : docked.state === 'error' ? 'Spacecraft could not be loaded. Check your connection.' : 'No crewed spacecraft docked right now.'}</Text>
+          )}
+          <Text style={styles.note}>Crewed spacecraft currently docked at the ISS and Tiangong. Each one is the crew’s ride home.</Text>
+        </View>
+      ) : (
+      <>
       <View style={styles.stationCard}>
         <View style={styles.stationFlags}>
           {STATIONS[station].countries.map((c) => <Flag key={c} country={c} width={27} label />)}
@@ -146,6 +183,29 @@ export default function SpaceScreen() {
           <Text style={styles.role}>{state === 'loading' ? 'Loading crews…' : state === 'error' ? 'Crews could not be loaded. Check your connection.' : 'Nobody on board right now.'}</Text>
         )}
       </View>
+      </>
+      )}
+
+      <Section title="Next crewed launches" count={nextCrewed.length} open={openLaunches} onToggle={() => setOpenLaunches(!openLaunches)}>
+        {nextCrewed.slice(0, 5).map((l) => (
+          <View key={l.id} style={styles.card} accessible accessibilityLabel={`${l.rocket}, ${l.mission}, ${relative(l.net, now)}`}>
+            <View style={styles.cardRow}>
+              <Flag country={l.country} code={l.code} width={30} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>{l.mission}</Text>
+                <Text style={styles.role}>{`${l.rocket}, ${l.site}`}</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={styles.soon}>{relative(l.net, now)}</Text>
+                <Text style={styles.tiny}>{dateTime(l.net)}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+        {nextCrewed.length === 0 && (
+          <Text style={styles.role}>{crewed.state === 'loading' ? 'Loading crewed launches…' : 'No crewed launches announced right now.'}</Text>
+        )}
+      </Section>
       <Text style={styles.credit}>Crew data: Launch Library 2 by The Space Devs</Text>
     </Screen>
   );
@@ -155,7 +215,7 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   hero: { height: 200, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: C.line, backgroundColor: '#050E24' },
   heroText: { position: 'absolute', left: 18, top: 16 },
-  count: { fontFamily: F.display, fontSize: 72, lineHeight: 76, color: C.text, fontVariant: ['tabular-nums'] },
+  count: { fontWeight: '700', fontSize: 72, lineHeight: 76, color: C.text, fontVariant: ['tabular-nums'] },
   countLabel: { fontSize: 15, color: '#CFE3FF' },
   tally: { position: 'absolute', left: 18, bottom: 14, flexDirection: 'row', gap: 6 },
   tallyChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingLeft: 4, paddingRight: 8, paddingVertical: 3, borderRadius: 999, borderWidth: 1, borderColor: C.line, backgroundColor: 'rgba(6,18,43,0.8)' },
@@ -167,7 +227,8 @@ const styles = StyleSheet.create({
   badge: { position: 'absolute', right: -4, bottom: -1, borderWidth: 1.5, borderColor: C.bg, borderRadius: 3 },
   name: { fontSize: 15, fontWeight: '600', color: C.text },
   role: { fontSize: 13, color: C.muted },
-  days: { fontFamily: F.display, fontSize: 17, color: C.sky },
+  soon: { fontSize: 14, fontWeight: '600', color: C.orangeSoft },
+  days: { fontWeight: '700', fontSize: 17, color: C.sky, fontVariant: ['tabular-nums'] },
   tiny: { fontSize: 11, color: C.muted },
   credit: { fontSize: 11, color: C.dim },
   stationCard: { borderWidth: 1, borderColor: C.sky, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: 'rgba(13,33,71,0.9)', gap: 3 },
