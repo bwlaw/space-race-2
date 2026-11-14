@@ -22,8 +22,9 @@ const formatDate = (iso: string) => {
 };
 
 export default function RaceScreen() {
-  const [metric, setMetric] = useState<Metric>('milestones');
-  const [period, setPeriod] = useState<Period>('allTime');
+  // Opens on launches of the last 12 months, the view we share most.
+  const [metric, setMetric] = useState<Metric>('launches');
+  const [period, setPeriod] = useState<Period>('last12');
   const [pick, setPick] = useState<Country | null>(null);
   const [more, setMore] = useState(false);
   const [run, setRun] = useState(0);
