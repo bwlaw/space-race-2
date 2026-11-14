@@ -117,6 +117,7 @@ export default function MapsScreen() {
   const [openOrbiters, setOpenOrbiters] = useState(true);
   const [openFlybys, setOpenFlybys] = useState(true);
   const [openCrewed, setOpenCrewed] = useState(true);
+  const [showAllOrbiters, setShowAllOrbiters] = useState(false);
   const now = useNow(2000);
   const upcoming = useRemote('ll2-upcoming-v3', UPCOMING_URL, 30 * MINUTE, parseAllLaunches);
   const issTle = useRemote('tle-iss', TLE_URLS.ISS, 6 * HOUR, parseTle, true);
@@ -141,7 +142,7 @@ export default function MapsScreen() {
   const artemisSel = body === 'Moon' && sel === ARTEMIS_REGION.key;
   const places = useMemo(() => [...PLACES[body]].sort((a, b) => b.year - a.year), [body]);
   // Crewed landings get their own list; the robotic ones stay under Landers and Rovers.
-  const crewedPlaces = places.filter((p) => p.crewed).sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
+  const crewedPlaces = places.filter((p) => p.crewed).sort((a, b) => b.name.localeCompare(a.name, 'en', { numeric: true }));
   const listPlaces = places.filter((p) => !p.crewed);
   const showIss = isEarth && (orbit === 'ISS' || orbit === 'Both');
   const showTg = isEarth && (orbit === 'Tiangong' || orbit === 'Both');
@@ -417,7 +418,7 @@ export default function MapsScreen() {
       </Section>
       {orbiters.length > 0 && (
         <Section title="Orbiters" count={orbiters.length} open={openOrbiters} onToggle={() => setOpenOrbiters(!openOrbiters)}>
-          {orbiters.map((o) => (
+          {(showAllOrbiters ? orbiters : orbiters.slice(0, 5)).map((o) => (
             <ItemRow
               key={o.key}
               on={o.key === curKey}
@@ -433,6 +434,11 @@ export default function MapsScreen() {
               note={o.note}
             />
           ))}
+          {orbiters.length > 5 && (
+            <Pressable onPress={() => setShowAllOrbiters(!showAllOrbiters)} accessibilityRole="button" accessibilityState={{ expanded: showAllOrbiters }} style={styles.moreBtn}>
+              <Text style={styles.moreText}>{showAllOrbiters ? 'Show fewer' : 'Show more orbiters'}</Text>
+            </Pressable>
+          )}
         </Section>
       )}
       {crewedPlaces.length > 0 && (
@@ -488,6 +494,8 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   map: { width: '100%', aspectRatio: MAP_W / MAP_H, marginVertical: 4 },
   label: { position: 'absolute' },
+  moreBtn: { height: 44, borderRadius: 12, borderWidth: 1, borderColor: C.line, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },
+  moreText: { fontSize: 14, fontWeight: '600', color: C.text },
   nameWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6 },
   rowNameFit: { flexShrink: 1, fontSize: 14, fontWeight: '600', color: C.text },
   helmets: { flexDirection: 'row', gap: 2 },
