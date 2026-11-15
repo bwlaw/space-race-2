@@ -61,7 +61,7 @@ export default function HistoryScreen() {
   const dayLaunches = useRemote('onthisday-v1', ON_THIS_DAY_URL, 12 * HOUR, parseOnThisDay).data;
   const fallback = facts.length === 0 ? dayLaunches?.[md] : undefined;
 
-  const live = useRemote('stats-v2', STATS_URL, 6 * HOUR, parseStats).data;
+  const live = useRemote('stats-v2', STATS_URL, HOUR, parseStats).data;
   const sample = COUNTRY_STATS[who ?? 'World'];
   const liveLaunch = live ? (who ? live.periods.allTime[who] : live.world) : null;
   const stats: [number, number, number, number, number] = [liveLaunch?.launches ?? sample[0], liveLaunch?.successRate ?? sample[1], liveLaunch?.crewed ?? sample[2], liveLaunch?.astronauts ?? sample[3], sample[4]];

@@ -30,7 +30,7 @@ export default function RaceScreen() {
   const [run, setRun] = useState(0);
   const [moreLaunches, setMoreLaunches] = useState(false);
   const recent = useRemote('ll2-previous-v2', PREVIOUS_URL, 30 * MINUTE, parseLaunches);
-  const statsRemote = useRemote('stats-v2', STATS_URL, 6 * HOUR, parseStats);
+  const statsRemote = useRemote('stats-v2', STATS_URL, HOUR, parseStats);
   const stats = statsRemote.data;
   const [now] = useState(() => Date.now());
 
