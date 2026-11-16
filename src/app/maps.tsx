@@ -86,12 +86,12 @@ function ItemRow({ on, onPress, name, sub, country, code, dot, accent, kind, inU
         <Flag country={country} code={code} width={24} />
         <View style={styles.nameWrap}>
           <Text style={styles.rowNameFit} numberOfLines={on ? 2 : 1}>{name}</Text>
-          {helmets > 0 && (
-            <View style={styles.helmets} accessible accessibilityLabel={`${helmets} crew`}>
-              {Array.from({ length: helmets }, (_, i) => <MiniHelmet key={i} />)}
-            </View>
-          )}
         </View>
+        {helmets > 0 && (
+          <View style={styles.helmets} accessible accessibilityLabel={`${helmets} crew`}>
+            {Array.from({ length: helmets }, (_, i) => <MiniHelmet key={i} />)}
+          </View>
+        )}
         <Text style={styles.small}>{sub}</Text>
         <Chevron open={on} />
       </View>
