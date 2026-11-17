@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16T11:49:39.862Z",
+  "updated": "2026-11-17T12:47:49.489Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
@@ -75,7 +75,7 @@
     },
     "last12": {
       "USA": {
-        "launches": 164,
+        "launches": 163,
         "successRate": 99,
         "rocket": "Falcon 9"
       },
