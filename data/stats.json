@@ -1,17 +1,17 @@
 {
-  "updated": "2026-11-19T12:26:39.242Z",
+  "updated": "2026-11-21T11:54:19.934Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
     "allTime": {
       "USA": {
-        "launches": 2508,
+        "launches": 2509,
         "successRate": 93,
         "crewed": 188,
         "astronauts": 469
       },
       "China": {
-        "launches": 816,
+        "launches": 817,
         "successRate": 95,
         "crewed": 17,
         "astronauts": 31
@@ -43,12 +43,12 @@
     },
     "last5": {
       "USA": {
-        "launches": 686,
+        "launches": 687,
         "successRate": 98,
         "rocket": "Falcon 9"
       },
       "China": {
-        "launches": 374,
+        "launches": 375,
         "successRate": 97,
         "rocket": "Long March 2D"
       },
@@ -108,15 +108,15 @@
   },
   "lastWeek": {
     "USA": 2,
-    "China": 1,
-    "Russia": 1,
+    "China": 2,
+    "Russia": 0,
     "Europe": 0,
     "India": 0,
     "Japan": 0
   },
   "world": {
-    "lastWeek": 5,
-    "launches": 7676,
+    "lastWeek": 4,
+    "launches": 7678,
     "successRate": 93,
     "crewed": 374,
     "astronauts": 795

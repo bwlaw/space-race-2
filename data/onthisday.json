@@ -1380,10 +1380,10 @@
   "mission": "Shijian 24"
  },
  "11-20": {
-  "year": 2023,
-  "country": "USA",
-  "rocket": "Falcon 9",
-  "mission": "Starlink Group 7-7"
+  "year": 2026,
+  "country": "China",
+  "rocket": "Long March 8A",
+  "mission": "SatNet LEO Group 30"
  },
  "11-22": {
   "year": 2025,
@@ -1806,10 +1806,10 @@
   "mission": "Shijian 30 A-C"
  },
  "11-21": {
-  "year": 2025,
-  "country": "China",
-  "rocket": "Long March 3B/E",
-  "mission": "TJSW-21"
+  "year": 2026,
+  "country": "USA",
+  "rocket": "Falcon 9",
+  "mission": "USSF-317"
  },
  "11-24": {
   "year": 2024,
