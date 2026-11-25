@@ -1392,10 +1392,10 @@
   "mission": "NROL-136"
  },
  "11-25": {
-  "year": 2025,
-  "country": "Russia",
-  "rocket": "Angara 1.2",
-  "mission": "3 x Rodnik (Kosmos 2597, 2598, 2599)"
+  "year": 2026,
+  "country": "China",
+  "rocket": "Long March 2F/G",
+  "mission": "Shenzhou 24"
  },
  "12-01": {
   "year": 2025,
@@ -1813,9 +1813,9 @@
  },
  "11-24": {
   "year": 2026,
-  "country": "Europe",
-  "rocket": "Ariane 64",
-  "mission": "Amazon Leo (LE-04)"
+  "country": "USA",
+  "rocket": "Falcon 9",
+  "mission": "USSF-266"
  },
  "12-20": {
   "year": 2025,
