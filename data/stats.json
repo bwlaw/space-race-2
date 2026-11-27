@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-26T12:59:00.357Z",
+  "updated": "2026-11-27T12:56:56.687Z",
   "source": "Launch Library 2 by The Space Devs",
   "fiveYearStart": "2022-01-01",
   "periods": {
@@ -11,7 +11,7 @@
         "astronauts": 469
       },
       "China": {
-        "launches": 818,
+        "launches": 819,
         "successRate": 95,
         "crewed": 18,
         "astronauts": 32
@@ -85,9 +85,9 @@
         "rocket": "Long March 6A"
       },
       "Russia": {
-        "launches": 20,
+        "launches": 19,
         "successRate": 100,
-        "rocket": "Soyuz 2.1a"
+        "rocket": "Soyuz 2.1b/Fregat-M"
       },
       "Europe": {
         "launches": 10,
@@ -108,7 +108,7 @@
   },
   "lastWeek": {
     "USA": 3,
-    "China": 3,
+    "China": 2,
     "Russia": 1,
     "Europe": 1,
     "India": 0,
@@ -116,7 +116,7 @@
   },
   "world": {
     "lastWeek": 8,
-    "launches": 7684,
+    "launches": 7685,
     "successRate": 93,
     "crewed": 375,
     "astronauts": 797
