@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Path, Polygon, Rect } from 'react-nativ
  * Every flag in the app, drawn as vector shapes (60 × 40 units).
  * No image files are involved, so flags can never fail to load.
  */
-export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR', 'IRN', 'PRK', 'ISR', 'AUS', 'GBR']);
+export const FLAG_CODES = new Set(['USA', 'China', 'Russia', 'Europe', 'India', 'Japan', 'CAN', 'ARE', 'NZL', 'KOR', 'IRN', 'PRK', 'ISR', 'AUS', 'GBR', 'PAK']);
 
 export function FlagArt({ code, width, height }: { code: string; width: number; height: number }) {
   return (
@@ -244,6 +244,15 @@ export function FlagArt({ code, width, height }: { code: string; width: number; 
             <Path d="M30.0 0V40M0 20.0H60" stroke="#FFFFFF" strokeWidth={12.1} />
             <Path d="M30.0 0V40M0 20.0H60" stroke="#C8102E" strokeWidth={6.8} />
           </G>
+        </>
+      )}
+      {code === 'PAK' && (
+        <>
+          <Rect width={60} height={40} fill="#01411C" />
+          <Rect width={15} height={40} fill="#FFFFFF" />
+          <Circle cx={38} cy={21} r={10.5} fill="#FFFFFF" />
+          <Circle cx={41.2} cy={18.4} r={9} fill="#01411C" />
+          <Polygon points="46.2,11.0 46.1,13.4 48.4,14.3 46.1,15.0 45.9,17.5 44.5,15.5 42.2,16.1 43.6,14.2 42.3,12.1 44.6,12.9" fill="#FFFFFF" />
         </>
       )}
     </Svg>

@@ -97,7 +97,7 @@ export default function SpaceScreen() {
         options={[
           { value: 'ISS', label: `ISS (${count('ISS')})` },
           { value: 'Tiangong', label: `Tiangong (${count('Tiangong')})` },
-          { value: 'Spacecraft', label: `Spacecraft (${craft.length})` },
+          { value: 'Spacecraft', label: 'Spacecraft' },
         ]}
         value={view}
         onChange={pickView}
